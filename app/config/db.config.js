@@ -1,9 +1,9 @@
 module.exports = {
   HOST: "localhost",
   USER: "root",
-  PASSWORD: "none", // SQLite kullanırken bu ikisine gerek yok ama standartta durur.
+  PASSWORD: "none", 
   DB: "testdb",
-  dialect: "sqlite", // 👈 EN ÖNEMLİ KISIM: Hangi dili konuşacağız?
+  dialect: "sqlite", 
   
   // SQLite'a özel ayar: Veritabanı dosyası nerede dursun?
   storage: './database.sqlite', 

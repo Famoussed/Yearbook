@@ -1,16 +1,13 @@
 const express = require("express");
 const app = express();
-const db = require("./app/models"); // index.js dosyasını çağırır
+const db = require("./app/models");
 
 app.use(express.json()); // JSON verilerini okumak için
 
 // --- SİHİRLİ KISIM BAŞLIYOR ---
 // sync() komutu veritabanına bakar:
 // "Tablolar var mı? Yoksa oluşturayım mı?" diye kontrol eder.
-db.sequelize.sync({ force: true }) // force: true => Her açılışta tabloları silip baştan yapar (Geliştirme için)
-  .then(() => {
-    console.log("Tablolar silindi ve yeniden senkronize edildi (Drop & Sync).");
-  })
+db.sequelize.sync({ force: false }) // force: true => Her açılışta tabloları silip baştan yapar (Geliştirme için)
   .catch((err) => {
     console.log("Veritabanı hatası: " + err.message);
   });
@@ -22,7 +19,8 @@ app.get("/", (req, res) => {
 
 const PORT = 8080;
 
-require("./app/routes/tutorial.routes")(app); // 👈 Bu satırı ekle
+require("./app/routes/tutorial.routes")(app);
+require("./app/routes/auth.routes")(app);
 
 app.listen(PORT, () => {
   console.log(`Sunucu ${PORT} portunda çalışıyor.`);

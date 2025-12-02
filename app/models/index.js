@@ -16,5 +16,6 @@ db.sequelize = sequelize;
 // 2. Modelleri sisteme tanıtıyoruz
 // "tutorial.model.js" dosyasını çağırıp içine (sequelize, Sequelize) parametrelerini atıyoruz.
 db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
+db.users = require("./user.model.js")(sequelize, Sequelize);
 
 module.exports = db;

@@ -5,6 +5,7 @@ module.exports = app => {
 
   // Yeni bir Tutorial oluştur
   router.post("/", tutorials.create);
-
+  router.get("/", tutorials.findAll);
   app.use('/api/tutorials', router);
+
 };

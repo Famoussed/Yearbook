@@ -31,3 +31,16 @@ exports.create = (req, res) => {
       });
     });
 };
+
+// 2. Tüm Verileri Getir (Read)
+exports.findAll = (req, res) => {
+  Tutorial.findAll()
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: err.message || "Veriler getirilirken bir hata oluştu."
+      });
+    });
+};
