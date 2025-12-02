@@ -24,8 +24,7 @@ exports.register = (req, res) => {
     });
 };
 
-// ... yukarıda register fonksiyonu var ...
-
+//3. Kullanıcı giriş yapma fonksiyonu
 exports.signin = (req, res) => {
   User.findOne({
     where: {

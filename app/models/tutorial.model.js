@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
   const Tutorial = sequelize.define("tutorial", {
-    // ID sütununu tanımlamaya gerek yok, Sequelize otomatik 'id' atar!
+    // ID sütununu tanımlamaya gerek yok, Sequelize otomatik 'id' atar
     
     title: {
       type: Sequelize.STRING 

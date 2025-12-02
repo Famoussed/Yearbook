@@ -5,10 +5,9 @@ module.exports = {
   DB: "testdb",
   dialect: "sqlite", 
   
-  // SQLite'a özel ayar: Veritabanı dosyası nerede dursun?
   storage: './database.sqlite', 
   
-  pool: { // Bağlantı havuzu ayarları (Opsiyonel ama profesyonel)
+  pool: { // (Opsiyonel)
     max: 5,     // Aynı anda en fazla 5 açık bağlantı
     min: 0,
     acquire: 30000,

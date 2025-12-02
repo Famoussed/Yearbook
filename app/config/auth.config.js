@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 module.exports = {
-  secret: "jsonwebtokenicingereklianahtar"
+  secret: process.env.JWT_SECRET
 };
