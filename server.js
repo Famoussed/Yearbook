@@ -18,6 +18,7 @@ const PORT = process.env.PORT || 8080;
 
 require("./app/routes/tutorial.routes")(app);
 require("./app/routes/auth.routes")(app);
+require("./app/routes/Yearbook.routes")(app);
 
 app.listen(PORT, () => {
   console.log(`Sunucu ${PORT} portunda çalışıyor.`);
