@@ -1,0 +1,207 @@
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-color: #6c5ce7;
+            --text-dark: #2d3436;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            /* Canlı, akışkan arka plan */
+            background: #cdc962;
+            background-size: 400% 400%;
+            min-height: 100vh;
+            color: var(--text-dark);
+            padding-bottom: 50px;
+        }
+
+        /* --- Glass Card Base Class --- */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        /* --- Navbar --- */
+        .glass-navbar {
+            margin-top: 20px;
+            margin-bottom: 30px;
+            padding: 15px 30px;
+            border-radius: 50px; /* Hap şeklinde navbar */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: -webkit-linear-gradient(#2d3436, #6c5ce7);
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            font-weight: 600;
+            text-decoration: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            transition: all 0.3s;
+            margin: 0 5px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: white;
+            color: var(--accent-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* --- Left Sidebar --- */
+        .profile-section {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .avatar-glass {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 4px solid rgba(255,255,255,0.8);
+        }
+
+        .menu-list {
+            padding: 15px;
+            list-style: none;
+            margin: 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.6);
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: var(--accent-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(108, 92, 231, 0.4);
+        }
+
+        .menu-item i { width: 25px; }
+
+        /* --- Middle Content --- */
+        .content-header {
+            padding: 25px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .glass-badge {
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--accent-color);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+        }
+
+        .glass-table {
+            width: 100%;
+            margin-bottom: 0;
+        }
+        
+        .glass-row {
+            display: flex;
+            padding: 18px 25px;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            transition: background 0.2s;
+        }
+        .glass-row:hover { background: rgba(255,255,255,0.4); }
+        .glass-row:last-child { border-bottom: none; }
+        
+        .lbl { width: 40%; color: #636e72; font-weight: 500; }
+        .val { width: 60%; font-weight: 700; color: #2d3436; }
+
+        .big-action-btn {
+            background: rgba(255,255,255,0.5);
+            border: 1px solid white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .big-action-btn:hover {
+            transform: translateY(-5px);
+            background: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .big-action-btn i { font-size: 1.5rem; margin-bottom: 10px; color: var(--accent-color); }
+        .big-action-btn h6 { font-weight: 700; margin: 0; }
+
+        /* --- Right Panel --- */
+        .stat-card {
+            background: rgba(255,255,255,0.5);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stat-num { font-size: 1.5rem; font-weight: 800; color: var(--accent-color); }
+        .stat-desc { font-size: 0.8rem; font-weight: 600; color: #636e72; text-transform: uppercase; }
+
+        .progress-glass {
+            height: 12px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress-bar-glass {
+            background: linear-gradient(90deg, #6c5ce7, #a29bfe);
+            width: 75%;
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        /* Responsive Fixes */
+        @media (max-width: 991px) {
+            .glass-navbar { flex-direction: column; gap: 15px; padding: 15px; }
+            .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
+            .content-header { flex-direction: column; text-align: center; gap: 10px; }
+            .glass-row { flex-direction: column; }
+            .lbl { width: 100%; margin-bottom: 5px; }
+            .val { width: 100%; }
+        }

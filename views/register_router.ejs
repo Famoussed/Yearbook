@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesap Türü Seçimi - Mezun.EU</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.40); 
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+            --text-dark: #1e272e; 
+            --accent-color: #6c5ce7;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #cdc962;
+            background: linear-gradient(135deg, #cdc962 0%, #e0dc76 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .role-card {
+            background: rgba(255,255,255,0.4);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 100%;
+            text-decoration: none;
+            color: var(--text-dark);
+            display: block;
+        }
+
+        .role-card:hover {
+            background: rgba(255,255,255,0.8);
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .role-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--text-dark);
+            color: #cdc962;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 20px;
+            transition: 0.3s;
+        }
+
+        .role-card:hover .role-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .role-title { font-weight: 800; font-size: 1.2rem; margin-bottom: 10px; }
+        .role-desc { font-size: 0.9rem; opacity: 0.8; font-weight: 500; }
+
+    </style>
+</head>
+<body>
+
+    <div class="glass-panel">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-2">Aramıza Hoş Geldiniz!</h2>
+            <p class="mb-0" style="opacity:0.8; font-weight:500;">Size en uygun deneyimi sunabilmemiz için lütfen kayıt türünü seçin.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <!-- Öğrenci Seçeneği -->
+            <div class="col-md-4">
+                <a href="register_student.html" class="role-card">
+                    <div class="role-icon"><i class="fas fa-user-graduate"></i></div>
+                    <div class="role-title">Öğrenciyim</div>
+                    <div class="role-desc">Yıllık sayfamı düzenlemek, arkadaşlarıma yazmak istiyorum.</div>
+                </a>
+            </div>
+
+            <!-- Öğretmen Seçeneği -->
+            <div class="col-md-4">
+                <a href="register_corporate.html?type=teacher" class="role-card">
+                    <div class="role-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <div class="role-title">Öğretmenim</div>
+                    <div class="role-desc">Sınıfımın yıllığını organize etmek ve yönetmek istiyorum.</div>
+                </a>
+            </div>
+
+            <!-- Bayi Seçeneği -->
+            <div class="col-md-4">
+                <a href="register_corporate.html?type=dealer" class="role-card">
+                    <div class="role-icon"><i class="fas fa-briefcase"></i></div>
+                    <div class="role-title">Bayiyim</div>
+                    <div class="role-desc">Fotoğrafçılık ve yıllık basım hizmetleri sunuyorum.</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="login.html" class="text-dark fw-bold text-decoration-none"><i class="fas fa-arrow-left me-2"></i>Giriş Ekranına Dön</a>
+        </div>
+    </div>
+
+</body>
+</html>

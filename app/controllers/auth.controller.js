@@ -1,35 +1,78 @@
-const bcrypt = require("bcryptjs");
 const db = require("../models");
+const config = require("../config/auth.config");
 const User = db.users;
-const config = require("../config/auth.config")
-const jwt = require("jsonwebtoken");
+const Role = db.roles;
+const Student = db.students;
+const Teacher = db.teachers;
+const School = db.schools;
 
-exports.register = (req, res) => {
-  // 1. Şifreleme İşlemi (Hashing)
-  // bcrypt.hashSync(sifre, zorluk_seviyesi)
-  // 8: Tuzlama (Salting) döngüsü. Sayı artarsa güvenlik artar ama işlem yavaşlar.
-  const passwordHash = bcrypt.hashSync(req.body.password, 8);
+const Op = db.Sequelize.Op;
+var jwt = require("jsonwebtoken");
+var bcrypt = require("bcryptjs");
 
-  // 2. Kullanıcıyı Oluşturma
-  User.create({
-    username: req.body.username,
-    email: req.body.email,
-    password: passwordHash //Passwordun hashli değeri buraya eklenir.
-  })
-    .then(user => {
-      res.send({ message: "Kullanıcı başarıyla kaydedildi!" });
-    })
-    .catch(err => {
-      res.status(500).send({ message: err.message });
-    });
+exports.register = async (req, res) => {
+  // Transaction Başlat
+  const t = await db.sequelize.transaction();
+
+  try {
+    // 1. ADIM: Önce Rolü Belirle (Kullanıcı oluşturulmadan önce ID lazım)
+    // Eğer rol gelmezse varsayılan olarak "user" yap.
+    let roleName = req.body.role || "user";
+    
+    // Veritabanından bu rolün ID'sini bul (Örn: student -> id: 2)
+    const role = await Role.findOne({ where: { name: roleName } });
+    
+    if (!role) {
+      throw new Error("Belirtilen rol sistemde bulunamadı!");
+    }
+
+    // 2. ADIM: Şifreyi Hashle
+    const passwordHash = bcrypt.hashSync(req.body.password, 8);
+
+    // 3. ADIM: User'ı oluştur
+    const user = await User.create({
+      role_id: role.id, 
+      fullname: req.body.fullname,
+      email: req.body.email,
+      password: passwordHash,
+      tckn: req.body.tckn,
+      status: true
+    }, { transaction: t });
+
+    // 4. ADIM: Profil Tablolarını Doldur
+    if (roleName === "student") {
+      await Student.create({
+        user_id: user.id, // User ID'yi manuel veriyoruz
+        school_id: req.body.school_id,
+        grade_level_id: req.body.grade_level_id,
+        student_number: req.body.student_number,
+        class_info: req.body.class_info
+      }, { transaction: t });
+
+    } else if (roleName === "teacher") {
+      await Teacher.create({
+        user_id: user.id,
+        school_id: req.body.school_id,
+        is_verified: false
+      }, { transaction: t });
+    }
+
+    // 5. Transaction Onayla
+    await t.commit();
+
+    res.send({ message: "Kayıt başarıyla tamamlandı!" });
+
+  } catch (error) {
+    // Hata durumunda geri al (rollback)
+    await t.rollback();
+    res.status(500).send({ message: error.message });
+  }
 };
 
-//3. Kullanıcı giriş yapma fonksiyonu
 exports.signin = (req, res) => {
   User.findOne({
-    where: {
-      username: req.body.username
-    }
+    where: { email: req.body.email},
+    include: ["role"]
   })
     .then(user => {
       if (!user) {
@@ -52,10 +95,13 @@ exports.signin = (req, res) => {
         expiresIn: 86400 // 24 saat
       });
 
+      var authority = "ROLE_" + user.role.name.toUpperCase();
+
       res.status(200).send({
         id: user.id,
-        username: user.username,
         email: user.email,
+        tckn: user.tckn,
+        role: authority,
         accessToken: token
       });
     })

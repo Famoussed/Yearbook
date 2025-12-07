@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glassmorphism Mezun Paneli</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS kodları-->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Google Fonts: 'Outfit' (Modern Geometric Sans) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- Floating Navbar -->
+        <nav class="glass-card glass-navbar">
+            <a href="#" class="brand-logo">Mezun<span style="font-weight:300">.EU</span></a>
+            <div class="nav-links">
+                <a href="#">Kişisel Bölüm</a>
+                <a href="#" class="active">Yıllık İşlemleri</a>
+                <a href="#">Hesabım</a>
+                <a href="#" class="ms-2"><i class="fas fa-search"></i></a>
+            </div>
+            <div class="d-none d-md-block">
+                <div class="d-flex gap-3">
+                    <i class="fas fa-bell fs-5 text-dark opacity-75" style="cursor:pointer"></i>
+                    <i class="fas fa-cog fs-5 text-dark opacity-75" style="cursor:pointer"></i>
+                </div>
+            </div>
+        </nav>
+
+        <div class="row">
+            
+            <!-- LEFT COLUMN -->
+            <div class="col-lg-3">
+                <div class="glass-card">
+                    <div class="profile-section">
+                        <div class="avatar-glass">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h5 class="fw-bold mb-1">İhsan Emre</h5>
+                        <small class="text-muted fw-bold">ÖĞRENCİ PANELİ</small>
+                    </div>
+                    
+                    <ul class="menu-list">
+                        <li><a href="#" class="menu-item"><i class="fas fa-user-circle me-2"></i> Profilim</a></li>
+                        <li><a href="#" class="menu-item"><i class="fas fa-envelope me-2"></i> Mesajlar</a></li>
+                        <hr style="opacity:0.1">
+                        <small class="ps-3 text-muted fw-bold" style="font-size:0.7rem; letter-spacing:1px;">YILLIK YÖNETİMİ</small>
+                        <li><a href="#" class="menu-item active mt-2"><i class="fas fa-info-circle me-2"></i> Yıllık Bilgileri</a></li>
+                        <li><a href="#" class="menu-item"><i class="fas fa-bullhorn me-2"></i> Duyurular</a></li>
+                        <li><a href="#" class="menu-item"><i class="fas fa-pen-alt me-2"></i> Arkadaşına Yaz</a></li>
+                        <li><a href="#" class="menu-item"><i class="fas fa-camera-retro me-2"></i> Fotoğraflar</a></li>
+                        <li><a href="#" class="menu-item"><i class="fas fa-paper-plane me-2"></i> Davet Gönder</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MIDDLE COLUMN -->
+            <div class="col-lg-6">
+                <div class="glass-card h-100">
+                    <div class="content-header">
+                        <div>
+                            <h4 class="mb-0 fw-bold">Genel Bilgiler</h4>
+                            <p class="mb-0 text-muted small">Okul ve yıllık süreç detayları</p>
+                        </div>
+                        <span class="glass-badge">2024 - 2025</span>
+                    </div>
+
+                    <div class="glass-table">
+                        <div class="glass-row">
+                            <div class="lbl">Okul Adı</div>
+                            <div class="val">Keçiören Aydoğan Aydın Fen Lisesi</div>
+                        </div>
+                        <div class="glass-row">
+                            <div class="lbl">Yıllık Sorumlusu</div>
+                            <div class="val d-flex align-items-center">
+                                <span class="bg-white rounded-circle p-1 me-2 shadow-sm"><i class="fas fa-chalkboard-teacher text-primary small"></i></span>
+                                Öğretmen
+                            </div>
+                        </div>
+                        <div class="glass-row">
+                            <div class="lbl">E-Posta</div>
+                            <div class="val text-primary text-decoration-underline">1@gmail.com</div>
+                        </div>
+                         <div class="glass-row">
+                            <div class="lbl">Kapak Tasarımı</div>
+                            <div class="val text-danger"><i class="fas fa-spinner fa-spin me-2"></i>Belirlenecek</div>
+                        </div>
+                         <div class="glass-row">
+                            <div class="lbl">Kağıt Tercihi</div>
+                            <div class="val">Kuşe Kağıt (1. Hamur)</div>
+                        </div>
+                         <div class="glass-row">
+                            <div class="lbl">Mevcut Durum</div>
+                            <div class="val text-success">Komite İncelemesi</div>
+                        </div>
+                    </div>
+
+                    <!-- Action Grid -->
+                    <div class="p-4 bg-white bg-opacity-25 mt-2">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="big-action-btn">
+                                    <i class="fas fa-university"></i>
+                                    <h6>Okul Bilgileri</h6>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="big-action-btn">
+                                    <i class="fas fa-swatchbook"></i>
+                                    <h6>Sayfa Düzeni</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="col-lg-3">
+                <div class="glass-card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h6 class="fw-bold mb-0">Yıllık Özeti</h6>
+                        <i class="fas fa-chart-pie text-muted"></i>
+                    </div>
+
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-num">147</div>
+                            <div class="stat-desc">Öğrenci</div>
+                        </div>
+                        <i class="fas fa-user-graduate text-muted opacity-25 fa-2x"></i>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-num">13</div>
+                            <div class="stat-desc">Komite</div>
+                        </div>
+                        <i class="fas fa-users-cog text-muted opacity-25 fa-2x"></i>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between small fw-bold mb-1">
+                            <span>Tamamlanma</span>
+                            <span>75%</span>
+                        </div>
+                        <div class="progress-glass">
+                            <div class="progress-bar-glass"></div>
+                        </div>
+                        <p class="text-center mt-3 small text-muted">
+                            <i class="fas fa-check-circle text-success me-1"></i>
+                            Yıllıklar şu an inceleme aşamasında.
+                        </p>
+                    </div>
+
+                    <button class="btn btn-dark w-100 rounded-pill py-2 mt-2 shadow-sm">
+                        Raporu İndir <i class="fas fa-download ms-2"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

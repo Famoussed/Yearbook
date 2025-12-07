@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glass Admin Dashboard</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: 'Outfit' (Modern Geometric) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Arka plan rengine uygun olarak cam panelin beyazlığını biraz artırdık */
+            --glass-bg: rgba(255, 255, 255, 0.40); 
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+            --accent-color: #6c5ce7;
+            /* Metin rengini genel olarak koyu tanımladık */
+            --text-dark: #1e272e; 
+            --sidebar-width: 260px;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            /* İstenilen arka plan rengi */
+            background-color: #cdc962;
+            /* Doku katmak için hafif bir gradyan eklenebilir, ancak ana renk #cdc962 */
+            background: linear-gradient(135deg, #cdc962 0%, #e0dc76 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* --- Glass Components --- */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            border-radius: 20px;
+        }
+
+        /* --- Layout --- */
+        .wrapper {
+            display: flex;
+            width: 100%;
+            align-items: stretch;
+        }
+
+        /* --- Sidebar --- */
+        #sidebar {
+            min-width: var(--sidebar-width);
+            max-width: var(--sidebar-width);
+            min-height: 95vh;
+            margin: 20px 0 20px 20px;
+            /* Sidebar metin rengini koyu yapıyoruz */
+            color: var(--text-dark); 
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .admin-logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            /* Logo rengini koyu yapıyoruz */
+            color: var(--text-dark); 
+            text-shadow: none; /* Koyu zeminde gölgeyi kaldırdık veya azalttık */
+        }
+
+        .sidebar-menu {
+            padding: 0 15px;
+            list-style: none;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li { margin-bottom: 10px; }
+
+        .sidebar-menu a {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            /* Menü linklerini koyu yapıyoruz */
+            color: rgba(30, 39, 46, 0.8); 
+            text-decoration: none;
+            border-radius: 15px;
+            transition: 0.3s;
+            font-weight: 600; /* Okunabilirlik için biraz kalınlaştırdık */
+        }
+
+        .sidebar-menu a:hover {
+            /* Hover durumunda arka planı koyu bir tonda şeffaf yapıyoruz */
+            background: rgba(0, 0, 0, 0.05);
+            color: #000;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu a.active {
+            /* Aktif menü öğesi */
+            background: rgba(0, 0, 0, 0.1); 
+            color: #000;
+            font-weight: 800;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-menu i { width: 30px; font-size: 1.1rem; }
+
+        .sidebar-footer {
+            padding: 20px;
+            background: rgba(255,255,255,0.2); /* Footer arka planını hafiflettik */
+            border-radius: 0 0 20px 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            /* Footer metnini koyulaştırdık */
+            color: rgba(30, 39, 46, 0.7); 
+        }
+
+        /* --- Content --- */
+        #content {
+            width: 100%;
+            padding: 20px;
+        }
+
+        /* Top Bar */
+        .top-glass-bar {
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-glass {
+            background: rgba(255,255,255,0.5); /* Arama kutusunu belirginleştirdik */
+            border: 1px solid rgba(255,255,255,0.6);
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: var(--text-dark);
+            width: 300px;
+            transition: 0.3s;
+        }
+        .search-glass:focus {
+            outline: none;
+            background: rgba(255,255,255,0.8);
+            width: 320px;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+        }
+        
+        .search-glass::placeholder {
+            color: rgba(30, 39, 46, 0.6);
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        
+        .stat-icon-bg {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 5rem;
+            opacity: 0.15; /* İkonları biraz daha belirginleştirdik */
+            transform: rotate(-15deg);
+        }
+        
+        .stat-value { font-size: 2rem; font-weight: 800; margin-bottom: 5px; color: #2d3436; }
+        .stat-label { font-size: 0.9rem; font-weight: 700; opacity: 0.8; text-transform: uppercase; color: #636e72; }
+
+        /* Renkli metinleri biraz daha koyu/okunaklı tonlara çektik */
+        .text-primary { color: #4834d4 !important; }
+        .text-warning { color: #f0932b !important; }
+        .text-success { color: #6ab04c !important; }
+        .text-danger { color: #eb4d4b !important; }
+
+        /* Tables */
+        .glass-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        
+        .glass-table thead th {
+            border: none;
+            padding: 15px 20px;
+            font-weight: 700;
+            color: #2d3436; /* Başlıklar koyu */
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .glass-table tbody tr {
+            background: rgba(255,255,255,0.5); /* Satır arka planı */
+            transition: 0.2s;
+        }
+        
+        .glass-table tbody tr:hover {
+            background: rgba(255,255,255,0.8);
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .glass-table td {
+            padding: 15px 20px;
+            vertical-align: middle;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            color: #2d3436; /* Hücre metinleri koyu */
+        }
+        
+        .glass-table td:first-child { border-radius: 10px 0 0 10px; border-left: 1px solid rgba(255,255,255,0.3); }
+        .glass-table td:last-child { border-radius: 0 10px 10px 0; border-right: 1px solid rgba(255,255,255,0.3); }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .status-active { background: rgba(106, 176, 76, 0.2); color: #438a29; } /* Daha koyu yeşil */
+        .status-pending { background: rgba(240, 147, 43, 0.2); color: #d35400; } /* Daha koyu turuncu */
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            #sidebar { margin-left: -260px; position: absolute; z-index: 999; height: 100vh; background: #dfe6e9; color: #2d3436; }
+            #sidebar.active { margin-left: 0; }
+            .stat-card { margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- SIDEBAR -->
+        <nav id="sidebar" class="glass-panel">
+            <div class="sidebar-header">
+                <div class="admin-logo">Admin<span style="font-weight:300">Panel</span></div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="#"><i class="fas fa-users"></i> Kullanıcılar</a></li>
+                <li><a href="#"><i class="fas fa-book"></i> Yıllık Onayları</a></li>
+                <li><a href="#"><i class="fas fa-money-bill-wave"></i> Finans</a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> Raporlar</a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i> Destek Talepleri</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Ayarlar</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <p class="mb-0">Mezun.EU v2.0</p>
+                <small>Güvenli Bağlantı</small>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <div id="content">
+            
+            <!-- Top Navbar -->
+            <div class="glass-panel top-glass-bar">
+                <h4 class="mb-0 fw-bold d-none d-md-block text-dark">Genel Bakış</h4>
+                
+                <div class="d-flex align-items-center gap-3">
+                    <input type="text" class="search-glass" placeholder="Veri ara...">
+                    
+                    <button class="btn btn-light rounded-circle shadow-sm" style="width:40px; height:40px;">
+                        <i class="fas fa-bell text-muted"></i>
+                    </button>
+                    
+                    <div class="d-flex align-items-center gap-2 bg-white bg-opacity-75 px-3 py-1 rounded-pill cursor-pointer shadow-sm">
+                        <img src="https://via.placeholder.com/30" class="rounded-circle" alt="Admin">
+                        <span class="fw-bold small text-dark">Süper Admin</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="glass-panel stat-card">
+                        <div class="stat-value text-primary">1,245</div>
+                        <div class="stat-label">Toplam Öğrenci</div>
+                        <i class="fas fa-user-graduate stat-icon-bg text-primary"></i>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="glass-panel stat-card">
+                        <div class="stat-value text-warning">18</div>
+                        <div class="stat-label">Onay Bekleyen</div>
+                        <i class="fas fa-clock stat-icon-bg text-warning"></i>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="glass-panel stat-card">
+                        <div class="stat-value text-success">₺42.5K</div>
+                        <div class="stat-label">Toplam Gelir</div>
+                        <i class="fas fa-wallet stat-icon-bg text-success"></i>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="glass-panel stat-card">
+                        <div class="stat-value text-danger">5</div>
+                        <div class="stat-label">Açık Destek</div>
+                        <i class="fas fa-headset stat-icon-bg text-danger"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="row">
+                <!-- Recent Yearbooks Table -->
+                <div class="col-lg-8">
+                    <div class="glass-panel p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold mb-0 text-dark">Son Yıllık Başvuruları</h5>
+                            <button class="btn btn-sm btn-dark rounded-pill px-3">Tümünü Gör</button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="glass-table">
+                                <thead>
+                                    <tr>
+                                        <th>Okul Adı</th>
+                                        <th>Sorumlu</th>
+                                        <th>Tarih</th>
+                                        <th>Durum</th>
+                                        <th>İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-bold">Keçiören Fen Lisesi</td>
+                                        <td>Ahmet Yılmaz</td>
+                                        <td>12 Eki 2025</td>
+                                        <td><span class="status-badge status-pending">İncelemede</span></td>
+                                        <td><button class="btn btn-sm btn-outline-dark rounded-circle"><i class="fas fa-arrow-right"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Galatasaray Üni. Hukuk</td>
+                                        <td>Ayşe Demir</td>
+                                        <td>10 Eki 2025</td>
+                                        <td><span class="status-badge status-active">Aktif</span></td>
+                                        <td><button class="btn btn-sm btn-outline-dark rounded-circle"><i class="fas fa-arrow-right"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">ODTÜ Bilgisayar Müh.</td>
+                                        <td>Mehmet Can</td>
+                                        <td>09 Eki 2025</td>
+                                        <td><span class="status-badge status-active">Aktif</span></td>
+                                        <td><button class="btn btn-sm btn-outline-dark rounded-circle"><i class="fas fa-arrow-right"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">İstanbul Lisesi</td>
+                                        <td>Selin Kaya</td>
+                                        <td>08 Eki 2025</td>
+                                        <td><span class="status-badge status-pending">İncelemede</span></td>
+                                        <td><button class="btn btn-sm btn-outline-dark rounded-circle"><i class="fas fa-arrow-right"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side Widgets -->
+                <div class="col-lg-4">
+                    <!-- Progress / Storage -->
+                    <div class="glass-panel p-4 mb-4">
+                        <h6 class="fw-bold mb-3 text-dark">Sunucu Durumu</h6>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1 text-dark fw-bold">
+                                <span>Disk Alanı</span>
+                                <span>65%</span>
+                            </div>
+                            <div class="progress" style="height: 6px; background: rgba(0,0,0,0.1);">
+                                <div class="progress-bar bg-dark" style="width: 65%"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1 text-dark fw-bold">
+                                <span>Bant Genişliği</span>
+                                <span>42%</span>
+                            </div>
+                            <div class="progress" style="height: 6px; background: rgba(0,0,0,0.1);">
+                                <div class="progress-bar bg-primary" style="width: 42%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Team -->
+                    <div class="glass-panel p-4">
+                        <h6 class="fw-bold mb-3 text-dark">Çevrimiçi Yöneticiler</h6>
+                        <ul class="list-unstyled">
+                            <li class="d-flex align-items-center mb-3">
+                                <div class="bg-white rounded-circle p-2 me-3 shadow-sm"><i class="fas fa-user-astronaut text-primary"></i></div>
+                                <div>
+                                    <h6 class="mb-0 text-dark small fw-bold">Ali Veli</h6>
+                                    <small class="text-muted fw-bold" style="font-size:0.7rem;">Editör</small>
+                                </div>
+                                <span class="ms-auto bg-success rounded-circle" style="width:8px; height:8px;"></span>
+                            </li>
+                            <li class="d-flex align-items-center mb-3">
+                                <div class="bg-white rounded-circle p-2 me-3 shadow-sm"><i class="fas fa-user-tie text-info"></i></div>
+                                <div>
+                                    <h6 class="mb-0 text-dark small fw-bold">Zeynep Su</h6>
+                                    <small class="text-muted fw-bold" style="font-size:0.7rem;">Finans</small>
+                                </div>
+                                <span class="ms-auto bg-success rounded-circle" style="width:8px; height:8px;"></span>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <div class="bg-white rounded-circle p-2 me-3 shadow-sm"><i class="fas fa-user-secret text-dark"></i></div>
+                                <div>
+                                    <h6 class="mb-0 text-dark small fw-bold">Sistem</h6>
+                                    <small class="text-muted fw-bold" style="font-size:0.7rem;">Bot</small>
+                                </div>
+                                <span class="ms-auto bg-warning rounded-circle" style="width:8px; height:8px;"></span>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

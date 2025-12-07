@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol - Mezun.EU</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: 'Outfit' -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Admin paneliyle aynı değişkenler */
+            --glass-bg: rgba(255, 255, 255, 0.40); 
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+            --accent-color: #6c5ce7;
+            --text-dark: #1e272e; 
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #cdc962;
+            background: linear-gradient(135deg, #cdc962 0%, #e0dc76 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        /* --- Glass Components --- */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            border-radius: 20px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            text-align: center;
+            display: block;
+            text-decoration: none;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            opacity: 0.9;
+        }
+
+        .glass-input {
+            background: rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.6);
+            padding: 12px 20px;
+            border-radius: 12px;
+            color: var(--text-dark);
+            width: 100%;
+            transition: 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 0 4px rgba(255,255,255,0.3);
+            border-color: #fff;
+        }
+        
+        .glass-input::placeholder {
+            color: rgba(30, 39, 46, 0.6);
+        }
+
+        .btn-glass-primary {
+            background: var(--text-dark);
+            color: #fff; /* Sarı zemin/koyu tema kontrastı için buton içi beyaz */
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            width: 100%;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-glass-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background: #000;
+        }
+
+        .social-btn {
+            background: rgba(255,255,255,0.4);
+            border: 1px solid rgba(255,255,255,0.5);
+            width: 100%;
+            padding: 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .social-btn:hover {
+            background: rgba(255,255,255,0.7);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+            color: rgba(30, 39, 46, 0.6);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(30, 39, 46, 0.2);
+        }
+        .divider:not(:empty)::before { margin-right: .5em; }
+        .divider:not(:empty)::after { margin-left: .5em; }
+
+        .form-check-input:checked {
+            background-color: var(--text-dark);
+            border-color: var(--text-dark);
+        }
+
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(40px);
+        }
+        .c1 { width: 200px; height: 200px; background: rgba(255,255,255,0.3); top: -50px; right: -50px; }
+        .c2 { width: 150px; height: 150px; background: rgba(255,255,255,0.2); bottom: -30px; left: -30px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="glass-panel auth-card">
+        <!-- Dekoratif Arka Planlar -->
+        <div class="decorative-circle c1"></div>
+        <div class="decorative-circle c2"></div>
+
+        <a href="#" class="brand-logo">Mezun<span style="font-weight:300">.EU</span></a>
+        <p class="text-center mb-4" style="font-weight:500; opacity:0.8;">Hemen aramıza katılın!</p>
+
+        <form>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Adınız</label>
+                    <input type="text" class="glass-input" placeholder="Örn: Ahmet">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Soyadınız</label>
+                    <input type="text" class="glass-input" placeholder="Örn: Yılmaz">
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <label class="form-label">E-Posta Adresi</label>
+                <input type="email" class="glass-input" placeholder="mail@ornek.com">
+            </div>
+
+            <div class="mt-3">
+                <label class="form-label">Şifre Oluşturun</label>
+                <div class="position-relative">
+                    <input type="password" class="glass-input" placeholder="******">
+                    <i class="fas fa-eye position-absolute top-50 end-0 translate-middle-y me-3" style="cursor:pointer; opacity:0.6;"></i>
+                </div>
+            </div>
+
+            <div class="mt-3 form-check">
+                <input type="checkbox" class="form-check-input" id="terms">
+                <label class="form-check-label small fw-bold" for="terms" style="opacity:0.8;">
+                    <a href="#" class="text-dark text-decoration-underline">Kullanım Koşullarını</a> okudum ve kabul ediyorum.
+                </label>
+            </div>
+
+            <button type="submit" class="btn-glass-primary mt-4">
+                Kayıt Ol <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+        </form>
+
+        <div class="divider">veya şununla kayıt ol</div>
+
+        <div class="d-flex gap-2">
+            <a href="#" class="social-btn">
+                <i class="fab fa-google text-danger"></i> Google
+            </a>
+            <a href="#" class="social-btn">
+                <i class="fab fa-linkedin text-primary"></i> LinkedIn
+            </a>
+        </div>
+
+        <div class="text-center mt-4 small fw-bold">
+            Zaten bir hesabınız var mı? 
+            <a href="#" class="text-dark text-decoration-underline">Giriş Yap</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

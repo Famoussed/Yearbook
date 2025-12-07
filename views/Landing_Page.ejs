@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mezun.EU - Yıllık Yönetim Sistemi</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: 'Outfit' -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.35);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+            --accent-color: #6c5ce7;
+            --text-dark: #1e272e;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #cdc962;
+            background: linear-gradient(135deg, #cdc962 0%, #e0dc76 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* --- Glass Utilities --- */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            border-radius: 20px;
+        }
+
+        .glass-btn {
+            background: var(--text-dark);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            display: inline-block;
+            border: none;
+        }
+        
+        .glass-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            background: black;
+            color: white;
+        }
+
+        .glass-btn-outline {
+            background: rgba(255,255,255,0.3);
+            border: 1px solid var(--text-dark);
+            color: var(--text-dark);
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            display: inline-block;
+        }
+
+        .glass-btn-outline:hover {
+            background: var(--text-dark);
+            color: white;
+        }
+
+        /* --- Navbar --- */
+        .navbar-glass {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1200px;
+            z-index: 1000;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            text-decoration: none;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            margin-left: 25px;
+            transition: 0.2s;
+        }
+        .nav-links a:hover { opacity: 0.7; }
+
+        /* --- Hero Section --- */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 100px; /* Navbar payı */
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+        
+        .hero-lead {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.8;
+            max-width: 600px;
+        }
+
+        /* --- Feature Cards --- */
+        .feature-card {
+            padding: 30px;
+            transition: 0.3s;
+            height: 100%;
+            background: rgba(255,255,255,0.25); /* Biraz daha şeffaf */
+        }
+        
+        .feature-card:hover {
+            background: rgba(255,255,255,0.5);
+            transform: translateY(-10px);
+        }
+
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            background: var(--text-dark);
+            color: #cdc962; /* İkon rengi arka planla uyumlu */
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* --- Decorative --- */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: -1;
+        }
+        .b1 { width: 400px; height: 400px; background: rgba(255,255,255,0.2); top: -100px; right: -100px; }
+        .b2 { width: 300px; height: 300px; background: rgba(255,255,255,0.15); bottom: 50px; left: -50px; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .navbar-glass { width: 95%; padding: 15px; }
+            .nav-links { display: none; } /* Basitlik için mobilde linkleri gizledik */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dekoratif Arka Plan -->
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+
+    <!-- Navbar -->
+    <nav class="glass-panel navbar-glass">
+        <a href="#" class="brand-logo">Mezun<span style="font-weight:300">.EU</span></a>
+        
+        <div class="d-flex align-items-center">
+            <div class="nav-links d-none d-md-block me-4">
+                <a href="#">Özellikler</a>
+                <a href="#">Okullar</a>
+                <a href="#">İletişim</a>
+            </div>
+            <!-- Kayıt Ol butonu eklendi -->
+            <a href="register" class="glass-btn-outline px-4 py-2 me-2" style="font-size:0.9rem;">Kayıt Ol</a>
+            <a href="login" class="glass-btn px-4 py-2" style="font-size:0.9rem;">Giriş Yap</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <span class="badge bg-dark text-warning mb-3 px-3 py-2 rounded-pill">YENİ DÖNEM BAŞLADI</span>
+                <h1 class="hero-title">Mezuniyet Sürecini <br>Keyfe Dönüştür</h1>
+                <p class="hero-lead">
+                    Yıllık yönetimi, fotoğraf organizasyonları ve mezuniyet balosu planlamaları artık tek bir platformda.
+                    Karmaşaya son verin, anın tadını çıkarın.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="register_select.html" class="glass-btn">Hesap Oluştur</a>
+                    <a href="#" class="glass-btn-outline"><i class="fas fa-play me-2"></i>Tanıtımı İzle</a>
+                </div>
+                
+                <div class="mt-5 d-flex align-items-center gap-4">
+                    <div>
+                        <h3 class="fw-bold mb-0">150+</h3>
+                        <small class="opacity-75 fw-bold">Kayıtlı Okul</small>
+                    </div>
+                    <div style="width:1px; height:40px; background:rgba(0,0,0,0.2);"></div>
+                    <div>
+                        <h3 class="fw-bold mb-0">25K+</h3>
+                        <small class="opacity-75 fw-bold">Mutlu Mezun</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ Taraf Görsel Alanı (Temsili Glass Kartlar) -->
+            <div class="col-lg-6 d-none d-lg-block position-relative">
+                <!-- Arka Plandaki Kart -->
+                <div class="glass-panel p-4 position-absolute" style="top:0; right:0; width:80%; transform: rotate(5deg); z-index:1; opacity:0.6;">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-white rounded-circle p-2 me-3"><i class="fas fa-user-graduate"></i></div>
+                        <div class="w-100 bg-white opacity-25 rounded" style="height:10px;"></div>
+                    </div>
+                    <div class="w-75 bg-white opacity-25 rounded mb-2" style="height:8px;"></div>
+                    <div class="w-50 bg-white opacity-25 rounded" style="height:8px;"></div>
+                </div>
+
+                <!-- Ön Plandaki Kart -->
+                <div class="glass-panel p-5 position-relative" style="z-index:2; margin-top:50px; margin-right:50px;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0">Yıllık Onay Durumu</h5>
+                        <span class="badge bg-success rounded-pill">Aktif</span>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="display-4 fw-bold me-3">75%</div>
+                        <div style="line-height:1.2">
+                            <small class="d-block fw-bold opacity-75">Tamamlanan</small>
+                            <small class="d-block fw-bold text-success">Süreç İşliyor</small>
+                        </div>
+                    </div>
+
+                    <div class="progress" style="height: 10px; background:rgba(0,0,0,0.1);">
+                        <div class="progress-bar bg-dark" style="width: 75%"></div>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-top border-secondary border-opacity-25">
+                        <div class="d-flex align-items-center">
+                            <img src="https://via.placeholder.com/40" class="rounded-circle border border-2 border-white" style="margin-right:-15px;">
+                            <img src="https://via.placeholder.com/40" class="rounded-circle border border-2 border-white" style="margin-right:-15px;">
+                            <img src="https://via.placeholder.com/40" class="rounded-circle border border-2 border-white" style="margin-right:-15px;">
+                            <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center border border-2 border-white" style="width:40px; height:40px; font-size:0.8rem;">+12</div>
+                            <small class="ms-3 fw-bold opacity-75">Komite Üyeleri</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="container py-5 mb-5">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="glass-panel feature-card">
+                    <div class="icon-box">
+                        <i class="fas fa-pen-nib"></i>
+                    </div>
+                    <h4 class="fw-bold">Kolay İçerik Yönetimi</h4>
+                    <p class="opacity-75">
+                        Öğrenciler kendi sayfalarını kolayca düzenler, arkadaşlarına anı yazıları bırakır.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-panel feature-card">
+                    <div class="icon-box">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4 class="fw-bold">Güvenli Veri</h4>
+                    <p class="opacity-75">
+                        Tüm kişisel veriler ve fotoğraflar uçtan uca şifreleme ile güvenli sunucularda saklanır.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-panel feature-card">
+                    <div class="icon-box">
+                        <i class="fas fa-print"></i>
+                    </div>
+                    <h4 class="fw-bold">Baskı & Dağıtım</h4>
+                    <p class="opacity-75">
+                        Tasarım onayından sonra kaliteli baskı süreci başlar ve adrese teslim edilir.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center py-4 opacity-75 small fw-bold">
+        <p class="mb-0">&copy; 2025 Mezun.EU - Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
