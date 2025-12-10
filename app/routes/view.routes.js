@@ -4,7 +4,9 @@ module.exports = function (app) {
     // Ana Sayfa
     app.get("/", (req, res) => res.render("Landing_Page"));
     app.get("/home", (req, res) => res.render("Landing_Page"));
-    app.get("/register", (req, res) => res.render("register_router"));
+    app.get("/register_router", (req, res) => res.render("register_router"));
     app.get("/login", (req, res) => res.render("login"));
+    app.get("/register", (req, res) => res.render("register"));
+    app.get("/profile", (req, res) => res.render("profile"));
 
 };

@@ -21,6 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Proje çalışıp tablolar oluşunca bunu tekrar 'false' yaparsın.
 db.sequelize.sync({ force: false }) 
   .then(() => {
+    //initial()
     console.log("Veritabanı senkronize oldu");
   })
   .catch((err) => {

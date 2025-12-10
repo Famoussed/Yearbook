@@ -29,6 +29,7 @@ db.gradeLevels = require("./gradeLevel.model.js")(sequelize, Sequelize); // YEN�
 db.users = require("./user.model.js")(sequelize, Sequelize);
 db.students = require("./student.model.js")(sequelize, Sequelize);
 db.teachers = require("./teacher.model.js")(sequelize, Sequelize);
+db.refreshToken = require("../models/refreshToken.model.js")(sequelize, Sequelize);
 
 // --- İLİŞKİLER (ASSOCIATIONS) ---
 
@@ -53,6 +54,16 @@ db.students.belongsTo(db.users, { foreignKey: "user_id", as: "user" });
 
 db.users.hasOne(db.teachers, { foreignKey: "user_id", as: "teacher_profile" });
 db.teachers.belongsTo(db.users, { foreignKey: "user_id", as: "user" });
+
+// İlişki: Bir kullanıcının bir (veya çok) refresh token'ı olabilir
+db.refreshToken.belongsTo(db.users, {
+  foreignKey: "userId",
+  targetKey: "id",
+});
+db.users.hasOne(db.refreshToken, {
+  foreignKey: "userId",
+  targetKey: "id",
+});
 
 // Kod içinde kullanmak için sabitler
 db.ROLES = ["user", "student", "teacher", "admin"];

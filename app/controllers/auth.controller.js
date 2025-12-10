@@ -5,6 +5,8 @@ const Role = db.roles;
 const Student = db.students;
 const Teacher = db.teachers;
 const School = db.schools;
+// DÜZELTME 1: Model ismini Büyük Harfle (PascalCase) başlattık ki aşağıda karışmasın
+const RefreshToken = db.refreshToken; 
 
 const Op = db.Sequelize.Op;
 var jwt = require("jsonwebtoken");
@@ -15,11 +17,9 @@ exports.register = async (req, res) => {
   const t = await db.sequelize.transaction();
 
   try {
-    // 1. ADIM: Önce Rolü Belirle (Kullanıcı oluşturulmadan önce ID lazım)
-    // Eğer rol gelmezse varsayılan olarak "user" yap.
+    // 1. ADIM: Rolü Belirle
     let roleName = req.body.role || "user";
     
-    // Veritabanından bu rolün ID'sini bul (Örn: student -> id: 2)
     const role = await Role.findOne({ where: { name: roleName } });
     
     if (!role) {
@@ -42,7 +42,7 @@ exports.register = async (req, res) => {
     // 4. ADIM: Profil Tablolarını Doldur
     if (roleName === "student") {
       await Student.create({
-        user_id: user.id, // User ID'yi manuel veriyoruz
+        user_id: user.id,
         school_id: req.body.school_id,
         grade_level_id: req.body.grade_level_id,
         student_number: req.body.student_number,
@@ -70,11 +70,12 @@ exports.register = async (req, res) => {
 };
 
 exports.signin = (req, res) => {
+  // Giriş için bilgileri sorgula
   User.findOne({
-    where: { email: req.body.email},
+    where: { email: req.body.email },
     include: ["role"]
   })
-    .then(user => {
+    .then(async user => {
       if (!user) {
         return res.status(404).send({ message: "Kullanıcı bulunamadı." });
       }
@@ -91,10 +92,15 @@ exports.signin = (req, res) => {
         });
       }
 
+      // 1. Access Token (Kısa ömürlü)
       var token = jwt.sign({ id: user.id }, config.secret, {
-        expiresIn: 86400 // 24 saat
+        expiresIn: config.jwtExpiration, 
       });
 
+      // 2. Refresh Token (Uzun ömürlü)
+      // DÜZELTME 2: En tepede tanımladğimiz 'RefreshToken' modelini kullanıyoruz.
+      let refreshTokenData = await RefreshToken.createToken(user);
+      
       var authority = "ROLE_" + user.role.name.toUpperCase();
 
       res.status(200).send({
@@ -102,7 +108,8 @@ exports.signin = (req, res) => {
         email: user.email,
         tckn: user.tckn,
         role: authority,
-        accessToken: token
+        accessToken: token,
+        refreshToken: refreshTokenData // Oluşturulan token verisi
       });
     })
     .catch(err => {

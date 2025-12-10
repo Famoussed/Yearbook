@@ -10,7 +10,7 @@
         body {
             font-family: 'Outfit', sans-serif;
             /* Canlı, akışkan arka plan */
-            background: #cdc962;
+            background: #bcbcb6;
             background-size: 400% 400%;
             min-height: 100vh;
             color: var(--text-dark);
