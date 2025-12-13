@@ -6,6 +6,7 @@ const path = require("path");
 const Role = db.roles;
 const GradeLevel = db.gradeLevels;
 const School = db.schools;
+const cookieParser = require('cookie-parser');
 
 // --- AYARLAR ---
 app.use(express.json()); // JSON verilerini okumak için
@@ -15,7 +16,7 @@ app.use(express.urlencoded({ extended: true })); // 👈 EKSİKTİ: HTML Form ve
 app.set('view engine', 'ejs');
 // "public" klasörünü dışarıya aç
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(cookieParser())
 // --- VERİTABANI BAĞLANTISI ---
 // DİKKAT: force: true yaptık. Çünkü yeni modeller ekledik, tablolar sıfırdan oluşmalı.
 // Proje çalışıp tablolar oluşunca bunu tekrar 'false' yaparsın.
