@@ -10,7 +10,8 @@
         body {
             font-family: 'Outfit', sans-serif;
             /* Canlı, akışkan arka plan */
-            background: #bcbcb6;
+            background-color: #8EC5FC;
+            background: linear-gradient(135deg, #8EC5FC 0%, #E0C3FC 80%);
             background-size: 400% 400%;
             min-height: 100vh;
             color: var(--text-dark);

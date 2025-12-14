@@ -1,0 +1,223 @@
+:root {
+            /* Admin Panel Özel Değişkenleri */
+            --glass-bg: rgba(255, 255, 255, 0.40); 
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+            --accent-color: #6c5ce7;
+            --text-dark: #1e272e;
+            --sidebar-width: 260px;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #8EC5FC;
+            background: linear-gradient(135deg, #8EC5FC 0%, #E0C3FC 120%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* --- Glass Components --- */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            border-radius: 20px;
+        }
+
+        /* --- Layout --- */
+        .wrapper {
+            display: flex;
+            width: 100%;
+            align-items: stretch;
+        }
+
+        /* --- Sidebar --- */
+        #sidebar {
+            min-width: var(--sidebar-width);
+            max-width: var(--sidebar-width);
+            min-height: 95vh;
+            margin: 20px 0 20px 20px;
+            color: var(--text-dark);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .admin-logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            text-shadow: none;
+        }
+
+        .sidebar-menu {
+            padding: 0 15px;
+            list-style: none;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li { margin-bottom: 10px; }
+
+        .sidebar-menu a {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            color: rgba(30, 39, 46, 0.8);
+            text-decoration: none;
+            border-radius: 15px;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        .sidebar-menu a:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #000;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu a.active {
+            background: rgba(0, 0, 0, 0.1);
+            color: #000;
+            font-weight: 800;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-menu i { width: 30px; font-size: 1.1rem; }
+
+        .sidebar-footer {
+            padding: 20px;
+            background: rgba(255,255,255,0.2); 
+            border-radius: 0 0 20px 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: rgba(30, 39, 46, 0.7);
+        }
+
+        /* --- Content --- */
+        #content {
+            width: 100%;
+            padding: 20px;
+        }
+
+        /* Top Bar */
+        .top-glass-bar {
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-glass {
+            background: rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.6);
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: var(--text-dark);
+            width: 300px;
+            transition: 0.3s;
+        }
+        .search-glass:focus {
+            outline: none;
+            background: rgba(255,255,255,0.8);
+            width: 320px;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+        }
+        
+        .search-glass::placeholder { color: rgba(30, 39, 46, 0.6); }
+
+        /* Stats Cards */
+        .stat-card {
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        
+        .stat-icon-bg {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 5rem;
+            opacity: 0.15;
+            transform: rotate(-15deg);
+        }
+        
+        .stat-value { font-size: 2rem; font-weight: 800; margin-bottom: 5px; color: #2d3436; }
+        .stat-label { font-size: 0.9rem; font-weight: 700; opacity: 0.8; text-transform: uppercase; color: #636e72; }
+
+        /* Utilities */
+        .text-primary { color: #4834d4 !important; }
+        .text-warning { color: #f0932b !important; }
+        .text-success { color: #6ab04c !important; }
+        .text-danger { color: #eb4d4b !important; }
+
+        /* Tables */
+        .glass-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        .glass-table thead th {
+            border: none;
+            padding: 15px 20px;
+            font-weight: 700;
+            color: #2d3436;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        .glass-table tbody tr { background: rgba(255,255,255,0.5); transition: 0.2s; }
+        .glass-table tbody tr:hover {
+            background: rgba(255,255,255,0.8);
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .glass-table td {
+            padding: 15px 20px;
+            vertical-align: middle;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            color: #2d3436;
+        }
+        .glass-table td:first-child { border-radius: 10px 0 0 10px; border-left: 1px solid rgba(255,255,255,0.3); }
+        .glass-table td:last-child { border-radius: 0 10px 10px 0; border-right: 1px solid rgba(255,255,255,0.3); }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .status-active { background: rgba(106, 176, 76, 0.2); color: #438a29; }
+        .status-pending { background: rgba(240, 147, 43, 0.2); color: #d35400; }
+
+        /* Form Elements for Create Yearbook */
+        .glass-form-label { font-weight: 600; color: var(--text-dark); margin-bottom: 5px; font-size: 0.9rem; }
+        .glass-form-control {
+            background: rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.6);
+            padding: 12px;
+            border-radius: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: 0.3s;
+        }
+        .glass-form-control:focus {
+            background: rgba(255,255,255,0.8);
+            outline: none;
+            border-color: var(--text-dark);
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            #sidebar { margin-left: -260px; position: absolute; z-index: 999; height: 100vh; background: #dfe6e9; color: #2d3436; }
+            #sidebar.active { margin-left: 0; }
+            .stat-card { margin-bottom: 20px; }
+        }

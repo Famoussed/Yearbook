@@ -53,6 +53,7 @@ function initial() {
 require("./app/routes/auth.routes")(app);
 require("./app/routes/Yearbook.routes")(app); // Dosya adının büyük/küçük harf durumuna dikkat et!
 require("./app/routes/view.routes")(app);
+require("./app/routes/school.routes")(app);
 
 // --- SUNUCUYU BAŞLAT ---
 const PORT = process.env.PORT || 8080;

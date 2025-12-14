@@ -1,11 +1,33 @@
 const db = require("../models");
-const YearBook = db.yearbook;
+const YearBook = db.yearbooks;
+const School = db.schools;
+
+//Veritabanından tüm yıllık bilgilerini çeken fonksiyon
+exports.getAllYearbooks = (req, res) => {
+  YearBook.findAll({
+    include: [{
+      model: School,
+      as: "school", // Okul bilgilerini de getir
+      attributes: ['name'] // Sadece okulun adını al, fazlasına gerek yok
+    }],
+    order: [['createdAt', 'DESC']] // En son oluşturulan en üstte görünsün
+  })
+  .then(data => {
+    res.send(data);
+  })
+  .catch(err => {
+    res.status(500).send({
+      message: err.message || "Yıllıklar getirilirken bir hata oluştu."
+    });
+  });
+};
 
 exports.createYearBook = (req, res) => {
   // YearBook Oluşturma
   YearBook.create({
     YearBookName: req.body.YearBookName,
     EduDate: req.body.EduDate,
+    school_id: req.body.school_id,
     YearBookCover: req.body.YearBookCover,
     PageSizes: req.body.PageSizes,
     YearBookStatus: req.body.YearBookStatus,
