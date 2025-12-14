@@ -25,11 +25,12 @@ db.sequelize = sequelize;
 // --- MODELLERİ ÇAĞIR ---
 db.roles = require("./role.model.js")(sequelize, Sequelize);
 db.schools = require("./school.model.js")(sequelize, Sequelize);
-db.gradeLevels = require("./gradeLevel.model.js")(sequelize, Sequelize); // YENİ
+db.gradeLevels = require("./gradeLevel.model.js")(sequelize, Sequelize); 
 db.users = require("./user.model.js")(sequelize, Sequelize);
 db.students = require("./student.model.js")(sequelize, Sequelize);
 db.teachers = require("./teacher.model.js")(sequelize, Sequelize);
 db.refreshToken = require("../models/refreshToken.model.js")(sequelize, Sequelize);
+db.yearbooks = require("./yearbook.model.js")(sequelize, Sequelize);
 
 // --- İLİŞKİLER (ASSOCIATIONS) ---
 
@@ -44,7 +45,7 @@ db.students.belongsTo(db.schools, { foreignKey: "school_id", as: "school" });
 db.schools.hasMany(db.teachers, { as: "teachers", foreignKey: "school_id" });
 db.teachers.belongsTo(db.schools, { foreignKey: "school_id", as: "school" });
 
-// 3. GradeLevel - Student İlişkisi (YENİ)
+// 3. GradeLevel - Student İlişkisi
 db.gradeLevels.hasMany(db.students, { as: "students", foreignKey: "grade_level_id" });
 db.students.belongsTo(db.gradeLevels, { foreignKey: "grade_level_id", as: "grade_level" });
 
@@ -54,6 +55,18 @@ db.students.belongsTo(db.users, { foreignKey: "user_id", as: "user" });
 
 db.users.hasOne(db.teachers, { foreignKey: "user_id", as: "teacher_profile" });
 db.teachers.belongsTo(db.users, { foreignKey: "user_id", as: "user" });
+
+// 5. Okul - Yıllık İlişkisi (YENİ - One-to-One) 🚀
+// Bir okulun sadece BİR yıllığı olur (hasOne)
+// Erişim yaparken: school.yearbook (tekil) şeklinde ulaşacaksın.
+db.schools.hasOne(db.yearbooks, { 
+    foreignKey: "school_id", 
+    as: "yearbook" 
+});
+db.yearbooks.belongsTo(db.schools, { 
+    foreignKey: "school_id", 
+    as: "school" 
+});
 
 // İlişki: Bir kullanıcının bir (veya çok) refresh token'ı olabilir
 db.refreshToken.belongsTo(db.users, {

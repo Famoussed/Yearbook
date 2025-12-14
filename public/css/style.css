@@ -43,8 +43,8 @@
         .brand-logo {
             font-size: 1.6rem;
             font-weight: 800;
-            background: -webkit-linear-gradient(#2d3436, #6c5ce7);
-            -webkit-text-fill-color: transparent;
+            -webkit-text-fill-color: #6c5ce7;
+            text-decoration: none;
         }
 
         .nav-links a {

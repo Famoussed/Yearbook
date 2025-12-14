@@ -15,7 +15,7 @@ module.exports = (sequelize, Sequelize) => {
             unique: true 
         },
         YearBookCover: {
-            //Kapak Türü
+            //Kapak Tasarımı
             type: Sequelize.STRING,
             defaultValue: "Belirlenecek",
             allowNull: false,
@@ -33,6 +33,12 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false,
             unique: false
+        },
+        school_id: {
+            //Bu userdaki school_id'nin aynısı aynı zamanda bizim FK'mız olucak
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            unique: true
         },
         PaperType: {
             //Kağıt Türü

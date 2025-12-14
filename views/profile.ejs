@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,18 +14,18 @@
     <!-- Google Fonts: 'Outfit' (Modern Geometric Sans) -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
     <div class="container">
-        
+
         <!-- Floating Navbar -->
         <nav class="glass-card glass-navbar">
-            <a href="/" class="brand-logo">Mezun<span style="font-weight:300">.EU</span></a>
+            <a href="/" class="brand-logo">Mezun<span style="font-weight:300">Soft</span></a>
             <div class="nav-links">
                 <a href="#">Kişisel Bölüm</a>
                 <a href="#" class="active">Yıllık İşlemleri</a>
                 <a href="#">Hesabım</a>
-                <a href="#" class="ms-2"><i class="fas fa-search"></i></a>
             </div>
             <div class="d-none d-md-block">
                 <div class="d-flex gap-3">
@@ -35,7 +36,7 @@
         </nav>
 
         <div class="row">
-            
+
             <!-- LEFT COLUMN -->
             <div class="col-lg-3">
                 <div class="glass-card">
@@ -43,82 +44,138 @@
                         <div class="avatar-glass">
                             <i class="fas fa-user"></i>
                         </div>
-                        <h5 class="fw-bold mb-1" id="username">Öğrenci İsm</h5>
+                        <h5 class="fw-bold mb-1" id="username">Öğrenci İsmi</h5>
                         <small class="text-muted fw-bold" id="rolePanel">ÖĞRENCİ PANELİ</small>
                     </div>
-                    
+
                     <ul class="menu-list">
-                        <li><a href="#" class="menu-item"><i class="fas fa-user-circle me-2"></i> Profilim</a></li>
-                        <li><a href="#" class="menu-item"><i class="fas fa-envelope me-2"></i> Mesajlar</a></li>
+                        <li><a href="#" class="menu-item nav-trigger" data-target="panel-profile"><i
+                                    class="fas fa-user-circle me-2"></i> Profilim</a></li>
+
                         <hr style="opacity:0.1">
-                        <small class="ps-3 text-muted fw-bold" style="font-size:0.7rem; letter-spacing:1px;">YILLIK YÖNETİMİ</small>
-                        <li><a href="#" class="menu-item active mt-2"><i class="fas fa-info-circle me-2"></i> Yıllık Bilgileri</a></li>
-                        <li><a href="#" class="menu-item"><i class="fas fa-bullhorn me-2"></i> Duyurular</a></li>
-                        <li><a href="#" class="menu-item"><i class="fas fa-pen-alt me-2"></i> Arkadaşına Yaz</a></li>
-                        <li><a href="#" class="menu-item"><i class="fas fa-camera-retro me-2"></i> Fotoğraflar</a></li>
-                        <li><a href="#" class="menu-item"><i class="fas fa-paper-plane me-2"></i> Davet Gönder</a></li>
+                        <small class="ps-3 text-muted fw-bold" style="font-size:0.7rem; letter-spacing:1px;">YILLIK
+                            YÖNETİMİ</small>
+
+                        <li><a href="#" class="menu-item nav-trigger active" data-target="panel-yearbook"><i
+                                    class="fas fa-info-circle me-2"></i> Yıllık Bilgileri</a></li>
+                        <li><a href="#" class="menu-item nav-trigger" data-target="panel-announcements"><i
+                                    class="fas fa-bullhorn me-2"></i> Duyurular</a></li>
+                        <li><a href="#" class="menu-item nav-trigger" data-target="panel-write"><i
+                                    class="fas fa-pen-alt me-2"></i> Arkadaşına Yaz</a></li>
+                        <li><a href="#" class="menu-item nav-trigger" data-target="panel-photos"><i
+                                    class="fas fa-camera-retro me-2"></i> Fotoğraflar</a></li>
                     </ul>
                 </div>
             </div>
 
             <!-- MIDDLE COLUMN -->
             <div class="col-lg-6">
-                <div class="glass-card h-100">
-                    <div class="content-header">
-                        <div>
-                            <h4 class="mb-0 fw-bold">Genel Bilgiler</h4>
-                            <p class="mb-0 text-muted small">Okul ve yıllık süreç detayları</p>
-                        </div>
-                        <span class="glass-badge">2024 - 2025</span>
-                    </div>
+                <div class="glass-card h-100 p-4">
 
-                    <div class="glass-table">
-                        <div class="glass-row">
-                            <div class="lbl">Okul Adı</div>
-                            <div class="val" id="schoolName"></div>
-                        </div>
-                        <div class="glass-row">
-                            <div class="lbl">Yıllık Sorumlusu</div>
-                            <div class="val d-flex align-items-center">
-                                <span class="bg-white rounded-circle p-1 me-2 shadow-sm"><i class="fas fa-chalkboard-teacher text-primary small"></i></span>
-                                Öğretmen
+                    <div id="panel-yearbook" class="content-section fade-in">
+                        <div class="content-header p-0 mb-3 border-0">
+                            <div>
+                                <h4 class="mb-0 fw-bold">Genel Bilgiler</h4>
+                                <p class="mb-0 text-muted small">Okul ve yıllık süreç detayları</p>
                             </div>
+                            <span class="glass-badge" id="gradeInfo"></span>
                         </div>
-                        <div class="glass-row">
-                            <div class="lbl">E-Posta</div>
-                            <div class="val text-primary text-decoration-underline">1@gmail.com</div>
-                        </div>
-                         <div class="glass-row">
-                            <div class="lbl">Kapak Tasarımı</div>
-                            <div class="val text-danger"><i class="fas fa-spinner fa-spin me-2"></i>Belirlenecek</div>
-                        </div>
-                         <div class="glass-row">
-                            <div class="lbl">Kağıt Tercihi</div>
-                            <div class="val">Kuşe Kağıt (1. Hamur)</div>
-                        </div>
-                         <div class="glass-row">
-                            <div class="lbl">Mevcut Durum</div>
-                            <div class="val text-success">Komite İncelemesi</div>
-                        </div>
-                    </div>
 
-                    <!-- Action Grid -->
-                    <div class="p-4 bg-white bg-opacity-25 mt-2">
-                        <div class="row g-3">
-                            <div class="col-6">
-                                <div class="big-action-btn">
-                                    <i class="fas fa-university"></i>
-                                    <h6>Okul Bilgileri</h6>
+                        <div class="glass-table">
+                            <div class="glass-row">
+                                <div class="lbl">Okul Adı</div>
+                                <div class="val" id="schoolName">Yükleniyor...</div>
+                            </div>
+                            <div class="glass-row">
+                                <div class="lbl">Yıllık Sorumlusu</div>
+
+                                <div class="val d-flex align-items-center">
+                                    <span class="bg-white rounded-circle p-1 me-2 shadow-sm"><i
+                                            class="text-primary small"></i></span>
+                                    Öğretmen
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="big-action-btn">
-                                    <i class="fas fa-swatchbook"></i>
-                                    <h6>Sayfa Düzeni</h6>
+                            <div class="glass-row">
+                                <div class="lbl">E-Posta</div>
+                                <div class="val text-primary text-decoration">1@gmail.com</div>
+                            </div>
+                            <div class="glass-row">
+                                <div class="lbl">Kapak Tasarımı</div>
+                                <div class="val"><i class="val"></i>Belirlenecek
                                 </div>
+                            </div>
+                            <div class="glass-row">
+                                <div class="lbl">Kağıt Tercihi</div>
+                                <div class="val">Kuşe Kağıt (1. Hamur)</div>
+                            </div>
+                            <div class="glass-row">
+                                <div class="lbl">Kağıt Ebatları</div>
+                                <div class="val text-success" id="pageSize"></div>
+                            </div>
+                            <div class="glass-row">
+                                <div class="lbl">Mevcut Durum</div>
+                                <div class="val text-success" id="status">Komite İncelemesi</div>
                             </div>
                         </div>
                     </div>
+
+                    <div id="panel-profile" class="content-section d-none fade-in">
+                        <h4 class="fw-bold mb-4">Profil Bilgileri</h4>
+                        <form id="profileUpdateForm">
+
+                            <div class="mb-3">
+                                <label class="small fw-bold text-muted">Ad Soyad</label>
+                                <input type="text" class="form-control" id="inputFullname" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label class="small fw-bold text-muted">E-Posta</label>
+                                <input type="email" class="form-control" id="inputEmail" disabled>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="small fw-bold text-muted">Öğrenci Numarası</label>
+                                    <input type="text" class="form-control" id="inputStudentNumber" disabled>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="small fw-bold text-muted">Şube / Sınıf</label>
+                                    <input type="text" class="form-control" id="inputClassInfo" disabled>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="panel-announcements" class="content-section d-none fade-in">
+                        <h4 class="fw-bold mb-3">Duyurular</h4>
+                        <div class="alert alert-light border shadow-sm">
+                            <small class="text-muted">12.10.2025</small>
+                            <h6 class="fw-bold mt-1">Fotoğraf Çekimleri Başlıyor!</h6>
+                            <p class="small mb-0">Arkadaşlar önümüzdeki hafta stüdyo çekimleri için randevu almayı
+                                unutmayın.</p>
+                        </div>
+                    </div>
+
+                    <div id="panel-write" class="content-section d-none fade-in">
+                        <h4 class="fw-bold mb-3">Anı Yazısı Bırak</h4>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Öğrenci ara...">
+                            <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+                        </div>
+                        <div class="text-center py-5 text-muted">
+                            <i class="fas fa-pen-fancy fa-3x mb-3 opacity-50"></i>
+                            <p>Yazı yazmak istediğin arkadaşını yukarıdan seç.</p>
+                        </div>
+                    </div>
+
+                    <div id="panel-photos" class="content-section d-none fade-in">
+                        <h4 class="fw-bold mb-3">Fotoğraf Yönetimi</h4>
+                        <div class="border dashed-border p-5 text-center rounded bg-light">
+                            <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
+                            <p class="small fw-bold">Profil fotoğrafını yüklemek için tıkla</p>
+                            <button class="btn btn-sm btn-outline-dark">Dosya Seç</button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -132,15 +189,15 @@
 
                     <div class="stat-card">
                         <div>
-                            <div class="stat-num">147</div>
+                            <div class="stat-num">3</div>
                             <div class="stat-desc">Öğrenci</div>
                         </div>
                         <i class="fas fa-user-graduate text-muted opacity-25 fa-2x"></i>
                     </div>
-                    
+
                     <div class="stat-card">
                         <div>
-                            <div class="stat-num">13</div>
+                            <div class="stat-num">0</div>
                             <div class="stat-desc">Komite</div>
                         </div>
                         <i class="fas fa-users-cog text-muted opacity-25 fa-2x"></i>
@@ -159,10 +216,6 @@
                             Yıllıklar şu an inceleme aşamasında.
                         </p>
                     </div>
-
-                    <button class="btn btn-dark w-100 rounded-pill py-2 mt-2 shadow-sm">
-                        Raporu İndir <i class="fas fa-download ms-2"></i>
-                    </button>
                 </div>
             </div>
 
@@ -173,4 +226,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/Profile.js"></script>
 </body>
+
 </html>

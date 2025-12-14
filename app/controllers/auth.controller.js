@@ -5,6 +5,7 @@ const Role = db.roles;
 const Student = db.students;
 const Teacher = db.teachers;
 const School = db.schools;
+const GradeLevel = db.gradeLevels
 const RefreshToken = db.refreshToken;
 
 const Op = db.Sequelize.Op;
@@ -69,16 +70,38 @@ exports.register = async (req, res) => {
 };
 
 exports.signin = (req, res) => {
-  // Giriş için bilgileri sorgula
+  // Kullanıcıyı ararken tüm akrabalarını da (Role, Student, School, GradeLevel) çağırıyoruz
   User.findOne({
     where: { email: req.body.email },
-    include: ["role"]
+    include: [
+      {
+        model: Role,
+        as: "role" // User -> Role ilişkisi
+      },
+      {
+        model: Student,
+        as: "student_profile", // User -> Student (models/index.js'deki 'as' ile aynı olmalı)
+        required: false, // Öğrenci değilse de (Admin/Öğretmen) kullanıcı gelsin diye false yapıyoruz
+        include: [ 
+            // Öğrenci tablosunun bağlı olduğu diğer tablolar
+            { 
+              model: School, 
+              as: "school" // Student -> School ilişkisi
+            },       
+            { 
+              model: GradeLevel, 
+              as: "grade_level" // Student -> GradeLevel ilişkisi
+            } 
+        ]
+      }
+    ]
   })
     .then(async user => {
       if (!user) {
         return res.status(404).send({ message: "Kullanıcı bulunamadı." });
       }
 
+      // Şifre Doğrulama
       var passwordIsValid = bcrypt.compareSync(
         req.body.password,
         user.password
@@ -91,45 +114,62 @@ exports.signin = (req, res) => {
         });
       }
 
-      // 1. Access Token (Kısa ömürlü)
+      // Token Üretimi
       var token = jwt.sign({ id: user.id }, config.secret, {
-        expiresIn: config.jwtExpiration,
+        expiresIn: config.jwtExpiration, // 1 Saat
       });
 
-      // 2. Refresh Token (Uzun ömürlü)
-      // DÜZELTME 2: En tepede tanımladğimiz 'RefreshToken' modelini kullanıyoruz.
       let refreshTokenData = await RefreshToken.createToken(user);
-
       var authority = "ROLE_" + user.role.name.toUpperCase();
 
-      // 1. Access Token Cookie Ayarı
+      // Cookie Ayarları
       res.cookie('accessToken', token, {
-        httpOnly: true, // JS okuyamaz (Güvenlik)
-        secure: false,  // Localhost'ta false, Canlıda (HTTPS) true olmalı
-        sameSite: 'strict', // CSRF koruması için
-        maxAge: 3600000 // 1 Saat (Milisaniye) 
+        httpOnly: true,
+        secure: false, // Canlıda (HTTPS) true olmalı
+        sameSite: 'strict',
+        maxAge: 3600000 // 1 Saat
       });
 
-      // 2. Refresh Token Cookie Ayarı
-      res.cookie('refreshToken', refreshTokenData, { // createToken fonksiyonunun dönüş değerine dikkat et
+      res.cookie('refreshToken', refreshTokenData, {
         httpOnly: true,
         secure: false,
         sameSite: 'strict',
-        maxAge: 864000000 // 240 Saat 
+        maxAge: 864000000 // 10 Gün
       });
 
-      res.status(200).send({
+      // --- CEVAP (RESPONSE) HAZIRLAMA --- 
+      
+      // 1. Standart Kullanıcı Bilgileri
+      let responseData = {
         id: user.id,
         email: user.email,
         fullname: user.fullname,
         role: authority,
-        // accessToken: token,
-        // refreshToken: refreshTokenData
-        // tokenleri yukarıda cookie içerisine aldım test aşaması bitene kadar bu yorum satırı kalsın
-      });
+      };
+
+      // 2. Eğer bu kişi bir ÖĞRENCİ ise, detayları ekle
+      // user.student_profile verisi geldiyse, bu kişi öğrencidir.
+      if (user.student_profile) {
+          responseData.student_info = {
+              student_number: user.student_profile.student_number,
+              class_info: user.student_profile.class_info, // Örn: "A Şubesi"
+              
+              // İlişkili tablolardan gelen veriler (?. ile güvenli erişim)
+              // Eğer okul veya sınıf silinmişse uygulama çökmesin diye kontrol ediyoruz
+              school_name: user.student_profile.school ? user.student_profile.school.name : "Okul Bilgisi Yok",
+              grade_name: user.student_profile.grade_level ? user.student_profile.grade_level.name : "Sınıf Bilgisi Yok",
+              
+              // İleride lazım olur diye ID'leri de yollayalım
+              school_id: user.student_profile.school_id,
+              grade_id: user.student_profile.grade_level_id
+          };
+      }
+
+      // 3. Frontend'e Paketi Gönder
+      res.status(200).send(responseData);
     })
     .catch(err => {
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: "Giriş hatası: " + err.message });
     });
 };
 

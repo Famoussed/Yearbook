@@ -37,9 +37,9 @@ function initial() {
   Role.create({ id: 3, name: "admin" });
 
   // Sınıf Seviyelerini oluştur
-  GradeLevel.create({ id: 1, name: "ilkokul" });
-  GradeLevel.create({ id: 2, name: "ortaokul" });
-  GradeLevel.create({ id: 3, name: "lişe" });
+  GradeLevel.create({ id: 1, name: "İlkokul" });
+  GradeLevel.create({ id: 2, name: "Ortaokul" });
+  GradeLevel.create({ id: 3, name: "Lise" });
   GradeLevel.create({ id: 4, name: "Üniversite" });
   GradeLevel.create({ id: 5, name: "Kurumlar" });
   
