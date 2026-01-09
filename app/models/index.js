@@ -31,6 +31,9 @@ db.students = require("./student.model.js")(sequelize, Sequelize);
 db.teachers = require("./teacher.model.js")(sequelize, Sequelize);
 db.refreshToken = require("../models/refreshToken.model.js")(sequelize, Sequelize);
 db.yearbooks = require("./yearbook.model.js")(sequelize, Sequelize);
+db.memories = require("./memory.model.js")(sequelize, Sequelize);
+db.notifications = require("./notification.model.js")(sequelize, Sequelize);
+db.announcements = require("./announcement.model.js")(sequelize, Sequelize);
 
 // --- İLİŞKİLER (ASSOCIATIONS) ---
 
@@ -76,6 +79,38 @@ db.refreshToken.belongsTo(db.users, {
 db.users.hasOne(db.refreshToken, {
   foreignKey: "userId",
   targetKey: "id",
+});
+
+//Memories sistemi için gerekli ilişkiler
+// A. Bir Anı, Bir Yıllığa Aittir
+db.yearbooks.hasMany(db.memories, { as: "memories", foreignKey: "yearbook_id" });
+db.memories.belongsTo(db.yearbooks, { foreignKey: "yearbook_id", as: "yearbook" });
+
+// B. Gönderen Öğrenci (Yazan)
+db.students.hasMany(db.memories, { as: "sent_memories", foreignKey: "from_student_id" });
+db.memories.belongsTo(db.students, { foreignKey: "from_student_id", as: "sender" });
+
+// C. Alıcı Öğrenci (Kendisine Yazılan)
+db.students.hasMany(db.memories, { as: "received_memories", foreignKey: "to_student_id" });
+db.memories.belongsTo(db.students, { foreignKey: "to_student_id", as: "receiver" });
+
+//Notification system için gerekli ilişkiler
+db.users.hasMany(db.notifications, { 
+    as: "notifications", 
+    foreignKey: "user_id" 
+});
+
+// Bir bildirim TEK bir kullanıcıya aittir
+db.notifications.belongsTo(db.users, { 
+    foreignKey: "user_id", 
+    as: "user" 
+});
+
+// 1. Okul ve Duyuru İlişkisi (Bir okulun çok duyurusu olur)
+db.schools.hasMany(db.announcements, { as: "announcements" });
+db.announcements.belongsTo(db.schools, {
+  foreignKey: "schoolId",
+  as: "school",
 });
 
 // Kod içinde kullanmak için sabitler

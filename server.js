@@ -51,9 +51,13 @@ function initial() {
 
 // --- ROTALAR ---
 require("./app/routes/auth.routes")(app);
-require("./app/routes/Yearbook.routes")(app); // Dosya adının büyük/küçük harf durumuna dikkat et!
+require("./app/routes/Yearbook.routes")(app);
 require("./app/routes/view.routes")(app);
 require("./app/routes/school.routes")(app);
+require("./app/routes/memory.routes")(app);
+require("./app/routes/teacher.routes")(app);
+require('./app/routes/notification.routes')(app);
+require('./app/routes/announcement.routes')(app);
 
 // --- SUNUCUYU BAŞLAT ---
 const PORT = process.env.PORT || 8080;

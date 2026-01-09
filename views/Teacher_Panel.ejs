@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Öğretmen Paneli - Mezun.EU</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="/css/Teacher_Panel.css">
+    <link rel="stylesheet" href="/css/profile.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* JS tarafından kullanılan gizleme sınıfı */
+        .d-none {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <nav id="sidebar" class="glass-panel">
+            <div class="sidebar-header">
+                <a href="/" class="panel-logo">Öğretmen<span style="font-weight:300">Paneli</span></a>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#" class="nav-trigger active" data-target="panel-dashboard">
+                        <i class="fas fa-home"></i> Sınıf Özeti
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#" class="nav-trigger" data-target="panel-students">
+                        <i class="fas fa-users"></i> Öğrenci Listesi
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#" class="nav-trigger" data-target="panel-approvals">
+                        <i class="fas fa-feather-alt"></i> Yazı Onayları
+                        <span class="badge bg-danger ms-auto rounded-pill" id="pendingCountBadge"
+                            style="display:none;">0</span>
+                    </a>
+                </li>
+
+                <li><a href="#"><i class="fas fa-images"></i> Sınıf Albümü</a></li>
+                <li><a href="#"><i class="fas fa-bullhorn"></i> Duyuru Yap</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                    <div class="bg-white rounded-circle p-1 d-flex justify-content-center align-items-center"
+                        style="width: 30px; height: 30px;">
+                        <i class="fas fa-user-tie text-dark"></i>
+                    </div>
+                    <small class="fw-bold" id="teacherNameDisplay">Yükleniyor...</small>
+                </div>
+                <a href="#" id="btnLogout" class="text-danger small fw-bold text-decoration-none text-center d-block">
+                    <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                </a>
+            </div>
+        </nav>
+
+        <div id="content">
+
+            <div class="glass-panel top-glass-bar">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-bars menu-toggle me-3"
+                        onclick="document.getElementById('sidebar').classList.toggle('active')"></i>
+                    <div>
+                        <h4 class="mb-0 fw-bold text-dark">Sınıf Yönetimi</h4>
+                        <span class="class-badge mt-1 d-inline-block">Dijital Yıllık Sistemi</span>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-dark rounded-pill px-3 shadow-sm d-none d-md-block">
+                        <i class="fas fa-plus me-2"></i> Yeni Öğrenci
+                    </button>
+                    <div class="position-relative">
+                        <i class="fas fa-bell fa-lg text-dark opacity-75"></i>
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-dashboard" class="content-section fade-in">
+                <div class="row mb-4 g-3">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="glass-panel stat-card">
+                            <div class="stat-value text-primary" id="statTotalStudents">0</div>
+                            <div class="stat-label">Sınıf Mevcudu</div>
+                            <i class="fas fa-user-graduate stat-icon-bg text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="glass-panel stat-card">
+                            <div class="stat-value text-success" id="statApprovedMemories">0</div>
+                            <div class="stat-label">Yazısı Biten</div>
+                            <i class="fas fa-check-circle stat-icon-bg text-success"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="glass-panel stat-card">
+                            <div class="stat-value text-warning" id="statPendingMemories">0</div>
+                            <div class="stat-label">Onay Bekleyen</div>
+                            <i class="fas fa-hourglass-half stat-icon-bg text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="glass-panel stat-card">
+                            <div class="stat-value text-danger">Aktif</div>
+                            <div class="stat-label">Yıllık Durumu</div>
+                            <i class="fas fa-print stat-icon-bg text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="glass-panel p-4 mb-4">
+                            <h6 class="fw-bold mb-3 text-dark">Hızlı Erişim</h6>
+                            <div class="alert alert-light border shadow-sm">
+                                <i class="fas fa-info-circle text-primary me-2"></i>
+                                <strong>Hoşgeldiniz!</strong> Sol menüden "Yazı Onayları" sekmesine giderek öğrencilerin
+                                birbirine yazdığı yazıları kontrol edebilirsiniz.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="glass-panel p-4 mb-4">
+                            <h6 class="fw-bold mb-3 text-dark">Sınıf İlerleme Durumu</h6>
+                            <div class="text-center mb-3">
+                                <div class="display-4 fw-bold text-dark">75%</div>
+                                <small class="text-muted fw-bold">Genel Tamamlanma</small>
+                            </div>
+                            <div class="progress mb-3" style="height: 10px; background: rgba(0,0,0,0.1);">
+                                <div class="progress-bar bg-success" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-students" class="content-section d-none fade-in">
+                <div class="glass-panel p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0 text-dark">Öğrenci Durum Listesi</h5>
+                        <div class="input-group w-auto">
+                            <span class="input-group-text bg-white border-0"><i class="fas fa-search"></i></span>
+                            <input type="text" id="searchStudentInput"
+                                class="form-control border-0 shadow-none bg-white" placeholder="Öğrenci Ara...">
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="glass-table w-100">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Öğrenci</th>
+                                    <th>Numara</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentListTable">
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">Yükleniyor...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-approvals" class="content-section d-none fade-in">
+                <div class="glass-panel p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0 text-dark">Onay Bekleyen Yazılar</h5>
+                        <button class="btn btn-sm btn-outline-dark rounded-pill" onclick="loadPendingMemories()">
+                            <i class="fas fa-sync-alt me-1"></i> Yenile
+                        </button>
+                    </div>
+
+                    <div id="pendingMemoriesList" class="row g-3 scrollable-area"
+                        style="max-height: 600px; overflow-y: auto;">
+                        <div class="text-center py-5">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i>
+                            <p class="mt-2">Yükleniyor...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="/js/Teacher.js"></script>
+
+    <!-- <script>
+        document.getElementById('btnLogout').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('userData');
+            window.location.href
+    </script> -->
+
+    <template id="memoryCardTemplate">
+        <div class="col-12 col-md-6 memory-card-item">
+            <div class="glass-panel p-3 border border-light border-opacity-25 h-100 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-2">
+                    <small class="text-white-50 text-truncate" style="max-width: 45%;">
+                        <i class="fas fa-paper-plane me-1"></i> 
+                        <strong class="sender-name">...</strong>
+                    </small>
+                    <i class="fas fa-arrow-right text-white-50 mx-2"></i>
+                    <small class="text-white-50 text-truncate" style="max-width: 45%;">
+                        <i class="fas fa-inbox me-1"></i> 
+                        <strong class="receiver-name">...</strong>
+                    </small>
+                </div>
+                
+                <hr class="border-light border-opacity-25 my-2">
+                
+                <div class="flex-grow-1">
+                    <p class="text-white fst-italic mb-3 text-break memory-content" style="white-space: pre-wrap; font-size: 0.95rem;">...</p>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2 mt-auto">
+                    <button class="btn btn-sm btn-outline-danger btn-reject">
+                        <i class="fas fa-times me-1"></i> Reddet
+                    </button>
+                    <button class="btn btn-sm btn-success btn-approve">
+                        <i class="fas fa-check me-1"></i> Onayla
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/Teacher.js"></script>
+</body>
+
+</html>
+</body>

@@ -82,18 +82,29 @@ exports.signin = (req, res) => {
         model: Student,
         as: "student_profile", // User -> Student (models/index.js'deki 'as' ile aynı olmalı)
         required: false, // Öğrenci değilse de (Admin/Öğretmen) kullanıcı gelsin diye false yapıyoruz
-        include: [ 
-            // Öğrenci tablosunun bağlı olduğu diğer tablolar
-            { 
-              model: School, 
-              as: "school" // Student -> School ilişkisi
-            },       
-            { 
-              model: GradeLevel, 
-              as: "grade_level" // Student -> GradeLevel ilişkisi
-            } 
+        include: [
+          // Öğrenci tablosunun bağlı olduğu diğer tablolar
+          {
+            model: School,
+            as: "school" // Student -> School ilişkisi
+          },
+          {
+            model: GradeLevel,
+            as: "grade_level" // Student -> GradeLevel ilişkisi
+          }
+        ]
+      },
+
+      {
+        model: Teacher, // Dosyanın başında const Teacher = db.teachers; dediğine emin ol
+        as: "teacher_profile", // index.js'deki isimle AYNI olmak zorunda
+        required: false, // ÇOK ÖNEMLİ: Eğer kullanıcı öğretmen değilse (öğrenciyse) sorgu patlamasın diye false yapıyoruz.
+        include: [
+          // İstersen öğretmenin okulunu da çekebilirsin
+          { model: School, as: "school" }
         ]
       }
+
     ]
   })
     .then(async user => {
@@ -138,7 +149,7 @@ exports.signin = (req, res) => {
       });
 
       // --- CEVAP (RESPONSE) HAZIRLAMA --- 
-      
+
       // 1. Standart Kullanıcı Bilgileri
       let responseData = {
         id: user.id,
@@ -150,19 +161,26 @@ exports.signin = (req, res) => {
       // 2. Eğer bu kişi bir ÖĞRENCİ ise, detayları ekle
       // user.student_profile verisi geldiyse, bu kişi öğrencidir.
       if (user.student_profile) {
-          responseData.student_info = {
-              student_number: user.student_profile.student_number,
-              class_info: user.student_profile.class_info, // Örn: "A Şubesi"
-              
-              // İlişkili tablolardan gelen veriler (?. ile güvenli erişim)
-              // Eğer okul veya sınıf silinmişse uygulama çökmesin diye kontrol ediyoruz
-              school_name: user.student_profile.school ? user.student_profile.school.name : "Okul Bilgisi Yok",
-              grade_name: user.student_profile.grade_level ? user.student_profile.grade_level.name : "Sınıf Bilgisi Yok",
-              
-              // İleride lazım olur diye ID'leri de yollayalım
-              school_id: user.student_profile.school_id,
-              grade_id: user.student_profile.grade_level_id
-          };
+        responseData.student_info = {
+          student_number: user.student_profile.student_number,
+          class_info: user.student_profile.class_info, // Örn: "A Şubesi"
+
+          // İlişkili tablolardan gelen veriler (?. ile güvenli erişim)
+          // Eğer okul veya sınıf silinmişse uygulama çökmesin diye kontrol ediyoruz
+          school_name: user.student_profile.school ? user.student_profile.school.name : "Okul Bilgisi Yok",
+          grade_name: user.student_profile.grade_level ? user.student_profile.grade_level.name : "Sınıf Bilgisi Yok",
+
+          // İleride lazım olur diye ID'leri de yollayalım
+          school_id: user.student_profile.school_id,
+          grade_id: user.student_profile.grade_level_id
+        };
+      }
+
+      if (user.teacher_profile) {
+        responseData.teacher_info = {
+          school_name: user.teacher_profile.school ? user.teacher_profile.school.name : "Okul Bilgisi Yok",
+          school_id: user.teacher_profile.school_id,
+        };
       }
 
       // 3. Frontend'e Paketi Gönder
@@ -184,9 +202,9 @@ exports.signout = async (req, res) => {
 
     // Eğer cookie içinde token varsa, veritabanından da silelim (Temizlik)
     if (refreshToken) {
-        await RefreshToken.destroy({
-          where: { token: refreshToken }
-        });
+      await RefreshToken.destroy({
+        where: { token: refreshToken }
+      });
     }
 
     // 2. KRİTİK NOKTA: Tarayıcıya "Cookie'leri Sil" emri veriyoruz 🧹
@@ -213,13 +231,13 @@ exports.signout = async (req, res) => {
 //bu fonksiyon sayesinde cookienin süresi dolduğunda frontend buna göre sayfayı düzenleyecek
 //bunu yapmasaydık cookieler expired olmasına rağmen userData varlığını korumaya devam ederdi tarayıcı içerisinde
 exports.checkSession = (req, res) => {
-    // Eğer buraya kadar gelebildiyse, Middleware (verifyToken) zaten onay vermiştir.
-    // Yani token sağlamdır.
-    res.status(200).send({ 
-        status: "OK", 
-        userId: req.userId,
-        message: "Oturum geçerli." 
-    });
+  // Eğer buraya kadar gelebildiyse, Middleware (verifyToken) zaten onay vermiştir.
+  // Yani token sağlamdır.
+  res.status(200).send({
+    status: "OK",
+    userId: req.userId,
+    message: "Oturum geçerli."
+  });
 
 
 };
@@ -244,10 +262,10 @@ exports.refreshToken = async (req, res) => {
     if (RefreshToken.verifyExpiration(refreshToken)) {
       // Geçmişse sil ve hata dön
       RefreshToken.destroy({ where: { id: refreshToken.id } });
-      
+
       res.clearCookie('accessToken');
       res.clearCookie('refreshToken');
-      
+
       return res.status(403).json({
         message: "Refresh token süresi dolmuş. Lütfen tekrar giriş yapın.",
       });
@@ -255,17 +273,17 @@ exports.refreshToken = async (req, res) => {
 
     // 3. Her şey yolunda! Yeni Access Token üret
     const user = await refreshToken.getUser();
-    
+
     let newAccessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET || config.secret, {
       expiresIn: config.jwtExpiration, // 1 Saat
     });
 
     // 4. Yeni Access Token'ı Cookie'ye yaz
     res.cookie('accessToken', newAccessToken, {
-        httpOnly: true,
-        secure: false, // Canlıda true
-        sameSite: 'strict',
-        maxAge: 3600000 // 1 Saat
+      httpOnly: true,
+      secure: false, // Canlıda true
+      sameSite: 'strict',
+      maxAge: 3600000 // 1 Saat
     });
 
     return res.status(200).json({
