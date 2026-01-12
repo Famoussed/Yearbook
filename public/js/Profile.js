@@ -95,6 +95,18 @@ function setupNavigation() {
                 targetPanel.classList.remove('d-none');
                 setTimeout(() => targetPanel.classList.add('fade-in-active'), 10);
             }
+            
+            // EĞER "ARKADAŞINA YAZ" PANELİNE GEÇİLDİYSE LİSTEYİ GÜNCELLE
+            if (targetId === 'panel-write') {
+                // DOM'un görünür hale gelmesi için ufak bir gecikme
+                setTimeout(() => {
+                    if (currentFilteredStudents.length === 0 && allStudents.length === 0) {
+                        fetchClassmates();
+                    } else {
+                        renderPagination();
+                    }
+                }, 50); 
+            }
         });
     });
 }
@@ -102,8 +114,9 @@ function setupNavigation() {
 // --- ARKADAŞ LİSTESİ VE PAGINATION ---
 
 async function fetchClassmates() {
+    console.log("DEBUG: fetchClassmates fonksiyonu çalıştı.");
     try {
-        const response = await fetch('/api/yearbook/classmates', {
+        const response = await fetch('/api/memory/classmates', {
             headers: { 'x-access-token': localStorage.getItem('token') }
         });
 
@@ -121,15 +134,17 @@ async function fetchClassmates() {
 }
 
 function filterStudents(term) {
+    console.log("DEBUG: filterstudents fonksiyonu çalıştı.");
     const lowerTerm = term.toLowerCase();
     currentFilteredStudents = allStudents.filter(s => 
-        s.user.fullname.toLowerCase().includes(lowerTerm)
+        s.fullname.toLowerCase().includes(lowerTerm)
     );
     currentPage = 1; // Arama yapınca ilk sayfaya dön
     renderPagination();
 }
 
 function renderPagination() {
+    console.log("DEBUG: renderpagination fonksiyonu çalıştı.");
     const listContainer = document.getElementById('classmatesList');
     const paginationContainer = document.getElementById('pagination-controls');
     
@@ -159,14 +174,14 @@ function renderPagination() {
             <div class="d-flex align-items-center">
                 <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" 
                      style="width:45px; height:45px; color:var(--accent-color); font-weight:bold;">
-                    ${student.user.fullname.charAt(0)}
+                    ${student.fullname.charAt(0)}
                 </div>
                 <div>
-                    <h6 class="mb-0 fw-bold">${student.user.fullname}</h6>
+                    <h6 class="mb-0 fw-bold">${student.fullname}</h6>
                     <small class="text-muted">Öğrenci</small>
                 </div>
             </div>
-            <button class="btn btn-sm btn-primary rounded-pill px-3" onclick="openWriteModal(${student.id}, '${student.user.fullname}')">
+            <button class="btn btn-sm btn-primary rounded-pill px-3" onclick="openWriteModal(${student.student_id}, '${student.fullname}')">
                 <i class="fas fa-pen me-1"></i> Yaz
             </button>
         `;
