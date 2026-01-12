@@ -6,6 +6,41 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    const annForm = document.getElementById('announcementForm');
+    if (annForm) {
+        annForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Form verisini al
+            const formData = new FormData(annForm);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/api/announcements', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': localStorage.getItem('token')
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert("✅ Duyuru başarıyla yayınlandı!");
+                    // Modalı kapat ve formu temizle
+                    bootstrap.Modal.getInstance(document.getElementById('createAnnouncementModal')).hide();
+                    annForm.reset();
+                } else {
+                    alert("Hata: " + result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Bir hata oluştu.");
+            }
+        });
+    }
+
     // 2. İsmi Güncelle
     document.getElementById('teacherNameDisplay').innerText = userData.fullname;
 
@@ -23,8 +58,8 @@ function setupNavigation() {
 
     triggers.forEach(button => {
         button.addEventListener('click', (e) => {
-            e.preventDefault(); 
-            
+            e.preventDefault();
+
             // Aktif sınıfını değiştir
             triggers.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
@@ -32,11 +67,11 @@ function setupNavigation() {
             // Panelleri değiştir
             const targetId = button.getAttribute('data-target');
             panels.forEach(panel => panel.classList.add('d-none'));
-            
+
             const targetPanel = document.getElementById(targetId);
             if (targetPanel) {
                 targetPanel.classList.remove('d-none');
-                
+
                 // Panele özel verileri yükle
                 if (targetId === 'panel-dashboard') loadDashboardStats();
                 if (targetId === 'panel-approvals') loadPendingMemories();
@@ -50,7 +85,7 @@ function setupNavigation() {
 async function loadDashboardStats() {
     try {
         const response = await fetch('/api/teacher/dashboard', { credentials: 'include' });
-        const  data = await response.json();
+        const data = await response.json();
 
         document.getElementById('statTotalStudents').innerText = data.totalStudents;
         document.getElementById('statPendingMemories').innerText = data.pendingMemories;
@@ -120,7 +155,7 @@ async function loadPendingMemories() {
 
 // --- 3. ONAY/RED FONKSİYONU ---
 async function decideMemory(memoryId, decision) {
-    if(!confirm(decision === 'approved' ? "Bu yazıyı onaylıyor musun?" : "Bu yazıyı reddediyor musun?")) return;
+    if (!confirm(decision === 'approved' ? "Bu yazıyı onaylıyor musun?" : "Bu yazıyı reddediyor musun?")) return;
 
     try {
         const response = await fetch('/api/teacher/approve-memory', {

@@ -20,7 +20,7 @@ app.use(cookieParser())
 // --- VERİTABANI BAĞLANTISI ---
 // DİKKAT: force: true yaptık. Çünkü yeni modeller ekledik, tablolar sıfırdan oluşmalı.
 // Proje çalışıp tablolar oluşunca bunu tekrar 'false' yaparsın.
-db.sequelize.sync({ force: false }) 
+db.sequelize.sync({ alter: false }) 
   .then(() => {
     //initial()
     console.log("Veritabanı senkronize oldu");

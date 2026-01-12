@@ -18,7 +18,7 @@ exports.createAnnouncement = async (req, res) => {
     await Announcement.create({
       title: title,
       content: content,
-      schoolId: teacher.school_id // Öğretmenin okuluyla ilişkilendir
+      school_id: teacher.school_id // Öğretmenin okuluyla ilişkilendir
     });
 
     res.status(200).send({ message: "Duyuru başarıyla yayınlandı." });
@@ -31,26 +31,26 @@ exports.createAnnouncement = async (req, res) => {
 // 2. DUYURULARI GETİR (Öğrenci ve Öğretmen Görebilir)
 exports.getAnnouncements = async (req, res) => {
   try {
-    let schoolId;
+    let school_id;
 
     // İstek yapan kim? Öğrenci mi Öğretmen mi?
     // (Bunu anlamak için önce öğretmende ara, yoksa öğrencide ara)
     const teacher = await Teacher.findOne({ where: { user_id: req.userId } });
     
     if (teacher) {
-        schoolId = teacher.school_id;
+        school_id = teacher.school_id;
     } else {
         const student = await Student.findOne({ where: { user_id: req.userId } });
-        if (student) schoolId = student.school_id;
+        if (student) school_id = student.school_id;
     }
 
-    if (!schoolId) {
+    if (!school_id) {
         return res.status(403).send({ message: "Herhangi bir okula kaydınız yok." });
     }
 
     // O okula ait duyuruları getir (En yeni en üstte)
     const announcements = await Announcement.findAll({
-      where: { schoolId: schoolId },
+      where: { school_id: school_id },
       order: [['createdAt', 'DESC']]
     });
 

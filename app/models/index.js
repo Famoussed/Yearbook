@@ -25,7 +25,7 @@ db.sequelize = sequelize;
 // --- MODELLERİ ÇAĞIR ---
 db.roles = require("./role.model.js")(sequelize, Sequelize);
 db.schools = require("./school.model.js")(sequelize, Sequelize);
-db.gradeLevels = require("./gradeLevel.model.js")(sequelize, Sequelize); 
+db.gradeLevels = require("./gradeLevel.model.js")(sequelize, Sequelize);
 db.users = require("./user.model.js")(sequelize, Sequelize);
 db.students = require("./student.model.js")(sequelize, Sequelize);
 db.teachers = require("./teacher.model.js")(sequelize, Sequelize);
@@ -62,13 +62,13 @@ db.teachers.belongsTo(db.users, { foreignKey: "user_id", as: "user" });
 // 5. Okul - Yıllık İlişkisi (YENİ - One-to-One) 🚀
 // Bir okulun sadece BİR yıllığı olur (hasOne)
 // Erişim yaparken: school.yearbook (tekil) şeklinde ulaşacaksın.
-db.schools.hasOne(db.yearbooks, { 
-    foreignKey: "school_id", 
-    as: "yearbook" 
+db.schools.hasOne(db.yearbooks, {
+  foreignKey: "school_id",
+  as: "yearbook"
 });
-db.yearbooks.belongsTo(db.schools, { 
-    foreignKey: "school_id", 
-    as: "school" 
+db.yearbooks.belongsTo(db.schools, {
+  foreignKey: "school_id",
+  as: "school"
 });
 
 // İlişki: Bir kullanıcının bir (veya çok) refresh token'ı olabilir
@@ -95,21 +95,21 @@ db.students.hasMany(db.memories, { as: "received_memories", foreignKey: "to_stud
 db.memories.belongsTo(db.students, { foreignKey: "to_student_id", as: "receiver" });
 
 //Notification system için gerekli ilişkiler
-db.users.hasMany(db.notifications, { 
-    as: "notifications", 
-    foreignKey: "user_id" 
+db.users.hasMany(db.notifications, {
+  as: "notifications",
+  foreignKey: "user_id"
 });
 
 // Bir bildirim TEK bir kullanıcıya aittir
-db.notifications.belongsTo(db.users, { 
-    foreignKey: "user_id", 
-    as: "user" 
+db.notifications.belongsTo(db.users, {
+  foreignKey: "user_id",
+  as: "user"
 });
 
 // 1. Okul ve Duyuru İlişkisi (Bir okulun çok duyurusu olur)
-db.schools.hasMany(db.announcements, { as: "announcements" });
+db.schools.hasMany(db.announcements, { as: "announcements", foreignKey: "school_id" });
 db.announcements.belongsTo(db.schools, {
-  foreignKey: "schoolId",
+  foreignKey: "school_id",
   as: "school",
 });
 
