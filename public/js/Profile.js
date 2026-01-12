@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 3. MENÜ GEÇİŞ SİSTEMİ
     setupNavigation();
 
-    // 4. BİLDİRİM SİSTEMİNİ BAŞLAT (YENİ EKLENEN KISIM) 🔔
+    // 4. BİLDİRİM SİSTEMİNİ BAŞLAT
     const btnNotifications = document.getElementById('btnNotifications');
     if (btnNotifications) {
         btnNotifications.addEventListener('click', loadNotifications);
@@ -24,7 +24,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Duyurular için gerkeli fonksiyon
     loadAnnouncements();
+
+    // 5. ARKADAŞ ARAMA İÇİN EVENT LISTENER (YENİ)
+    const searchInput = document.getElementById('searchFriend');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value;
+            filterStudents(searchTerm);
+        });
+    }
+    
+    // Arkadaş listesini çek (Sayfa yüklendiğinde arka planda çeksin, panel açılınca hazır olsun)
+    fetchClassmates();
 });
+
+// --- GLOBAL DEĞİŞKENLER (PAGINATION İÇİN) ---
+let allStudents = []; // Tüm öğrenci listesi burada tutulacak
+let currentFilteredStudents = []; // Arama yapıldığında filtrelenmiş liste
+const ITEMS_PER_PAGE = 5; // Sayfa başına kaç kişi?
+let currentPage = 1;
 
 // --- MEVCUT FONKSİYONLARIN (AYNI KALDI) ---
 function fillUserData(user) {
@@ -81,7 +99,127 @@ function setupNavigation() {
     });
 }
 
-// --- EKSİK OLAN BİLDİRİM FONKSİYONLARI (BURAYI EKLEDİK) ---
+// --- ARKADAŞ LİSTESİ VE PAGINATION ---
+
+async function fetchClassmates() {
+    try {
+        const response = await fetch('/api/yearbook/classmates', {
+            headers: { 'x-access-token': localStorage.getItem('token') }
+        });
+
+        if (response.ok) {
+            allStudents = await response.json();
+            currentFilteredStudents = allStudents; // Başlangıçta hepsi
+            currentPage = 1;
+            renderPagination();
+        } else {
+            document.getElementById('classmatesList').innerHTML = '<div class="text-danger text-center">Liste yüklenemedi.</div>';
+        }
+    } catch (error) {
+        console.error("Liste hatası:", error);
+    }
+}
+
+function filterStudents(term) {
+    const lowerTerm = term.toLowerCase();
+    currentFilteredStudents = allStudents.filter(s => 
+        s.user.fullname.toLowerCase().includes(lowerTerm)
+    );
+    currentPage = 1; // Arama yapınca ilk sayfaya dön
+    renderPagination();
+}
+
+function renderPagination() {
+    const listContainer = document.getElementById('classmatesList');
+    const paginationContainer = document.getElementById('pagination-controls');
+    
+    listContainer.innerHTML = '';
+    paginationContainer.innerHTML = '';
+
+    if (currentFilteredStudents.length === 0) {
+        listContainer.innerHTML = '<div class="text-center text-muted p-4">Öğrenci bulunamadı.</div>';
+        return;
+    }
+
+    // Toplam Sayfa Sayısı
+    const totalPages = Math.ceil(currentFilteredStudents.length / ITEMS_PER_PAGE);
+
+    // Hangi aralıktaki öğrencileri göstereceğiz?
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    const pageItems = currentFilteredStudents.slice(start, end);
+
+    // 1. LİSTEYİ OLUŞTUR
+    pageItems.forEach(student => {
+        const item = document.createElement('div');
+        item.className = "glass-card p-3 mb-0 d-flex align-items-center justify-content-between";
+        item.style.borderLeft = "4px solid var(--accent-color)";
+        
+        item.innerHTML = `
+            <div class="d-flex align-items-center">
+                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" 
+                     style="width:45px; height:45px; color:var(--accent-color); font-weight:bold;">
+                    ${student.user.fullname.charAt(0)}
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold">${student.user.fullname}</h6>
+                    <small class="text-muted">Öğrenci</small>
+                </div>
+            </div>
+            <button class="btn btn-sm btn-primary rounded-pill px-3" onclick="openWriteModal(${student.id}, '${student.user.fullname}')">
+                <i class="fas fa-pen me-1"></i> Yaz
+            </button>
+        `;
+        listContainer.appendChild(item);
+    });
+
+    // 2. SAYFALANDIRMA BUTONLARI (Eğer 1 sayfadan fazlaysa)
+    if (totalPages > 1) {
+        // Önceki Butonu
+        const prevBtn = document.createElement('button');
+        prevBtn.className = `btn btn-sm btn-light border rounded-circle ${currentPage === 1 ? 'disabled' : ''}`;
+        prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+        prevBtn.onclick = () => changePage(currentPage - 1);
+        paginationContainer.appendChild(prevBtn);
+
+        // Sayfa Numaraları
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.className = `btn btn-sm rounded-circle ${currentPage === i ? 'btn-primary' : 'btn-light border'}`;
+            pageBtn.style.width = "32px";
+            pageBtn.style.height = "32px";
+            pageBtn.innerText = i;
+            pageBtn.onclick = () => changePage(i);
+            paginationContainer.appendChild(pageBtn);
+        }
+
+        // Sonraki Butonu
+        const nextBtn = document.createElement('button');
+        nextBtn.className = `btn btn-sm btn-light border rounded-circle ${currentPage === totalPages ? 'disabled' : ''}`;
+        nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+        nextBtn.onclick = () => changePage(currentPage + 1);
+        paginationContainer.appendChild(nextBtn);
+    }
+}
+
+function changePage(newPage) {
+    const totalPages = Math.ceil(currentFilteredStudents.length / ITEMS_PER_PAGE);
+    if (newPage < 1 || newPage > totalPages) return;
+    
+    currentPage = newPage;
+    renderPagination();
+}
+
+function openWriteModal(studentId, studentName) {
+    document.getElementById('modalTargetId').value = studentId;
+    document.getElementById('modalTargetName').innerText = studentName;
+    
+    const modal = new bootstrap.Modal(document.getElementById('writeMemoryModal'));
+    modal.show();
+}
+
+
+// --- EKSİK OLAN BİLDİRİM FONKSİYONLARI ---
 
 // 1. KIRMIZI BADGE KONTROLÜ
 async function checkUnreadCount() {
@@ -92,17 +230,14 @@ async function checkUnreadCount() {
 
         if (response.ok) {
             const notifs = await response.json();
-            // Okunmamış (is_read: false veya 0) olanları say
-            // Not: SQLite 0/1 döndürür, bu yüzden (!n.is_read) ikisini de yakalar
-            const unreadCount = notifs.length; // Bizim sistemde "Listede varsa okunmamıştır" mantığı kurmuştuk.
+            const unreadCount = notifs.length;
 
             const badge = document.getElementById('notificationBadge');
 
             if (unreadCount > 0 && badge) {
                 badge.innerText = unreadCount;
-                badge.style.display = 'inline-block'; // Görünür yap
+                badge.style.display = 'inline-block';
 
-                // İkonu salla (Animasyon)
                 const icon = document.querySelector('#btnNotifications i');
                 if (icon) icon.classList.add('fa-shake');
             } else if (badge) {
@@ -120,7 +255,6 @@ async function loadNotifications() {
     const modal = new bootstrap.Modal(modalElement);
     modal.show();
 
-    // Animasyonu durdur
     const icon = document.querySelector('#btnNotifications i');
     if (icon) icon.classList.remove('fa-shake');
 
@@ -167,16 +301,13 @@ async function loadNotifications() {
                 </div>
             `;
 
-            // TIKLAYINCA SİLME İŞLEMİ
             item.addEventListener('click', async () => {
-                // Görsel silme
                 item.style.transition = "all 0.3s";
                 item.style.opacity = "0";
                 item.style.transform = "translateX(20px)";
 
                 setTimeout(() => {
                     item.remove();
-                    // Listeyi kontrol et, boşsa badge'i sıfırla
                     if (listContainer.children.length === 0) {
                         listContainer.innerHTML = '<div class="text-center p-4 text-muted">Tüm bildirimleri okudunuz.</div>';
                         updateBadgeCount(0);
@@ -185,7 +316,6 @@ async function loadNotifications() {
                     }
                 }, 300);
 
-                // API silme
                 try {
                     await fetch(`/api/notifications/${notif.id}`, {
                         method: 'DELETE',
@@ -203,7 +333,6 @@ async function loadNotifications() {
     }
 }
 
-// Badge Yardımcıları
 function updateBadgeCount(count) {
     const badge = document.getElementById('notificationBadge');
     if (badge) {
@@ -220,17 +349,11 @@ function decreaseBadgeCount() {
     }
 }
 
-// Announcement fonksiyonu
 async function loadAnnouncements() {
     const container = document.querySelector('#panel-announcements');
-    // Başlık (H4) kalsın, altındaki içerikleri temizleyip dolduracağız.
-    // Ancak senin HTML yapında başlık panelin içinde. O yüzden sadece listeyi ekleyeceğimiz bir div oluştursan daha iyi olurdu.
-    // Mevcut yapına göre şöyle yapalım:
-
-    // Başlığı koru, içeriği temizle (biraz riskli ama pratik çözüm)
-    const header = container.querySelector('h4'); // Başlığı al
+    const header = container.querySelector('h4');
     container.innerHTML = '';
-    container.appendChild(header); // Başlığı geri koy
+    container.appendChild(header);
 
     try {
         const response = await fetch('/api/announcements', {
@@ -248,9 +371,8 @@ async function loadAnnouncements() {
 
         announcements.forEach(ann => {
             const date = new Date(ann.createdAt).toLocaleDateString('tr-TR');
-
             const card = document.createElement('div');
-            card.className = "alert alert-light border shadow-sm mb-3"; // Tasarımın aynısı
+            card.className = "alert alert-light border shadow-sm mb-3";
             card.innerHTML = `
                 <small class="text-muted"><i class="far fa-calendar-alt me-1"></i>${date}</small>
                 <h6 class="fw-bold mt-1 text-primary">${ann.title}</h6>

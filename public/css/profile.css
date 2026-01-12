@@ -289,3 +289,20 @@
                 width: 100%;
             }
         }
+        
+        /* Pagination Styles */
+        .pagination-container button {
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .pagination-container button:hover:not(.disabled) {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color) !important;
+        }
+        
+        .pagination-container button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
