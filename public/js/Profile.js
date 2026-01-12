@@ -364,40 +364,103 @@ function decreaseBadgeCount() {
     }
 }
 
-async function loadAnnouncements() {
-    const container = document.querySelector('#panel-announcements');
-    const header = container.querySelector('h4');
-    container.innerHTML = '';
-    container.appendChild(header);
+// --- DUYURU PAGINATION DEĞİŞKENLERİ ---
+let allAnnouncements = [];
+const ANNOUNCEMENTS_PER_PAGE = 5; // Duyuru başına düşen miktar
+let currentAnnouncementPage = 1;
 
+async function loadAnnouncements() {
+    // Eski container referansı yerine yenisini kullanacağız
+    // HTML'de id="announcementListContainer" ekledik
+    
     try {
         const response = await fetch('/api/announcements', {
             headers: { 'x-access-token': localStorage.getItem('token') }
         });
-        const announcements = await response.json();
-
-        if (announcements.length === 0) {
-            const emptyMsg = document.createElement('div');
-            emptyMsg.className = "alert alert-light border text-center text-muted";
-            emptyMsg.innerText = "Henüz yayınlanmış bir duyuru yok.";
-            container.appendChild(emptyMsg);
-            return;
+        
+        if(response.ok) {
+            allAnnouncements = await response.json();
+            currentAnnouncementPage = 1;
+            renderAnnouncementPagination();
+        } else {
+             document.getElementById('announcementListContainer').innerHTML = '<div class="text-danger small">Duyurular yüklenemedi.</div>';
         }
-
-        announcements.forEach(ann => {
-            const date = new Date(ann.createdAt).toLocaleDateString('tr-TR');
-            const card = document.createElement('div');
-            card.className = "alert alert-light border shadow-sm mb-3";
-            card.innerHTML = `
-                <small class="text-muted"><i class="far fa-calendar-alt me-1"></i>${date}</small>
-                <h6 class="fw-bold mt-1 text-primary">${ann.title}</h6>
-                <p class="small mb-0 text-dark">${ann.content}</p>
-            `;
-            container.appendChild(card);
-        });
 
     } catch (error) {
         console.error("Duyurular yüklenemedi:", error);
-        container.innerHTML += '<div class="text-danger small">Duyurular yüklenirken hata oluştu.</div>';
+        document.getElementById('announcementListContainer').innerHTML = '<div class="text-danger small">Hata oluştu.</div>';
     }
+}
+
+function renderAnnouncementPagination() {
+    const listContainer = document.getElementById('announcementListContainer');
+    const paginationContainer = document.getElementById('announcement-pagination-controls');
+    
+    if(!listContainer || !paginationContainer) return;
+
+    listContainer.innerHTML = '';
+    paginationContainer.innerHTML = '';
+
+    if (allAnnouncements.length === 0) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = "alert alert-light border text-center text-muted";
+        emptyMsg.innerText = "Henüz yayınlanmış bir duyuru yok.";
+        listContainer.appendChild(emptyMsg);
+        return;
+    }
+
+    // Pagination Hesaplamaları
+    const totalPages = Math.ceil(allAnnouncements.length / ANNOUNCEMENTS_PER_PAGE);
+    const start = (currentAnnouncementPage - 1) * ANNOUNCEMENTS_PER_PAGE;
+    const end = start + ANNOUNCEMENTS_PER_PAGE;
+    const pageItems = allAnnouncements.slice(start, end);
+
+    // 1. Listeyi Render Et
+    pageItems.forEach(ann => {
+        const date = new Date(ann.createdAt).toLocaleDateString('tr-TR');
+        const card = document.createElement('div');
+        card.className = "alert alert-light border shadow-sm mb-3";
+        card.innerHTML = `
+            <small class="text-muted"><i class="far fa-calendar-alt me-1"></i>${date}</small>
+            <h6 class="fw-bold mt-1 text-primary">${ann.title}</h6>
+            <p class="small mb-0 text-dark">${ann.content}</p>
+        `;
+        listContainer.appendChild(card);
+    });
+
+    // 2. Butonları Render Et
+    if (totalPages > 1) {
+        // Önceki
+        const prevBtn = document.createElement('button');
+        prevBtn.className = `btn btn-sm btn-light border rounded-circle ${currentAnnouncementPage === 1 ? 'disabled' : ''}`;
+        prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+        prevBtn.onclick = () => changeAnnouncementPage(currentAnnouncementPage - 1);
+        paginationContainer.appendChild(prevBtn);
+
+        // Sayfalar
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.className = `btn btn-sm rounded-circle ${currentAnnouncementPage === i ? 'btn-primary' : 'btn-light border'}`;
+            pageBtn.style.width = "32px";
+            pageBtn.style.height = "32px";
+            pageBtn.innerText = i;
+            pageBtn.onclick = () => changeAnnouncementPage(i);
+            paginationContainer.appendChild(pageBtn);
+        }
+
+        // Sonraki
+        const nextBtn = document.createElement('button');
+        nextBtn.className = `btn btn-sm btn-light border rounded-circle ${currentAnnouncementPage === totalPages ? 'disabled' : ''}`;
+        nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+        nextBtn.onclick = () => changeAnnouncementPage(currentAnnouncementPage + 1);
+        paginationContainer.appendChild(nextBtn);
+    }
+}
+
+function changeAnnouncementPage(newPage) {
+    const totalPages = Math.ceil(allAnnouncements.length / ANNOUNCEMENTS_PER_PAGE);
+    if (newPage < 1 || newPage > totalPages) return;
+    
+    currentAnnouncementPage = newPage;
+    renderAnnouncementPagination();
 }
