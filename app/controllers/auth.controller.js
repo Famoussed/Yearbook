@@ -295,5 +295,3 @@ exports.refreshToken = async (req, res) => {
     return res.status(500).send({ message: err.message });
   }
 };
-
-//branch test amaçlı komut satırı
