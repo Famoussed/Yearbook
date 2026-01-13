@@ -1,4 +1,5 @@
 const authJwt = require("../middlewares/authJwt");
+const controller = require("../controllers/views.controller"); // Controller'ı dahil et
 
 module.exports = function (app) {
     // Ana Sayfa
@@ -14,4 +15,7 @@ module.exports = function (app) {
     //Korumalı fonksiyon olduğu için authJwt Fonksiyonu eklendi
     app.get("/profile", [authJwt.verifyTokenForView], (req, res) => res.render("profile"));
 
+    // --- PROFİL İSTATİSTİKLERİ API (Öğrenci & Komite Sayısı) ---
+    // Bu endpoint, profile sayfasındaki sağ panelde bulunan Yıllık Özeti kısmını doldurur.
+    app.get("/api/view/profile-stats", [authJwt.verifyToken], controller.getProfileStats);
 };

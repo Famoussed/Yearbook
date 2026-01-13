@@ -36,7 +36,31 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Arkadaş listesini çek (Sayfa yüklendiğinde arka planda çeksin, panel açılınca hazır olsun)
     fetchClassmates();
+    
+    // Yıllık İstatistiklerini Çek (YENİ)
+    loadYearbookStats();
 });
+
+// --- YILLIK İSTATİSTİKLERİ ---
+async function loadYearbookStats() {
+    try {
+        const response = await fetch('/api/view/profile-stats', {
+            headers: { 'x-access-token': localStorage.getItem('token') }
+        });
+
+        if (response.ok) {
+            const stats = await response.json();
+            
+            const elStudent = document.getElementById('statStudentCount');
+            const elTeacher = document.getElementById('statTeacherCount');
+
+            if (elStudent) elStudent.innerText = stats.studentCount;
+            if (elTeacher) elTeacher.innerText = stats.teacherCount;
+        }
+    } catch (error) {
+        console.error("İstatistik yüklenemedi:", error);
+    }
+}
 
 // --- GLOBAL DEĞİŞKENLER (PAGINATION İÇİN) ---
 let allStudents = []; // Tüm öğrenci listesi burada tutulacak
