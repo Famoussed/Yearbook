@@ -140,6 +140,11 @@ function setupNavigation() {
                 }
             }
 
+            // EĞER "FOTOĞRAFLAR" PANELİNE GEÇİLDİYSE FOTOĞRAFLARI YÜKLE (YENİ)
+            if (targetId === 'panel-photos') {
+                loadPhotos();
+            }
+
             // EĞER "ARKADAŞINA YAZ" PANELİNE GEÇİLDİYSE LİSTEYİ GÜNCELLE
             if (targetId === 'panel-write') {
                 // DOM'un görünür hale gelmesi için ufak bir gecikme
