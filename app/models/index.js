@@ -34,12 +34,21 @@ db.yearbooks = require("./yearbook.model.js")(sequelize, Sequelize);
 db.memories = require("./memory.model.js")(sequelize, Sequelize);
 db.notifications = require("./notification.model.js")(sequelize, Sequelize);
 db.announcements = require("./announcement.model.js")(sequelize, Sequelize);
+db.photos = require("./photo.model.js")(sequelize, Sequelize);
 
 // --- İLİŞKİLER (ASSOCIATIONS) ---
 
 // 1. Role - User İlişkisi
 db.roles.hasMany(db.users, { as: "users", foreignKey: "role_id" });
 db.users.belongsTo(db.roles, { foreignKey: "role_id", as: "role" });
+
+// ... (Mevcut kodlar) ...
+
+// Fotoğraf İlişkileri
+db.students.hasMany(db.photos, { as: "photos", foreignKey: "student_id" });
+db.photos.belongsTo(db.students, { foreignKey: "student_id", as: "student" });
+
+// Kod içinde kullanmak için sabitler
 
 // 2. School - Student & Teacher İlişkisi
 db.schools.hasMany(db.students, { as: "students", foreignKey: "school_id" });

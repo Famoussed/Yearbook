@@ -96,6 +96,26 @@ function setupNavigation() {
                 setTimeout(() => targetPanel.classList.add('fade-in-active'), 10);
             }
             
+            // --- DİNAMİK LAYOUT AYARLARI (ANI DEFTERİ İÇİN) ---
+            const middleCol = document.getElementById('middle-content-area');
+            const rightCol = document.getElementById('right-sidebar-summary');
+
+            if (targetId === 'panel-memories') {
+                // Anı defterinde sağ paneli gizle ve orta alanı genişlet
+                if (rightCol) rightCol.classList.add('d-none');
+                if (middleCol) {
+                    middleCol.classList.remove('col-lg-6');
+                    middleCol.classList.add('col-lg-9');
+                }
+            } else {
+                // Diğer panellerde varsayılana dön
+                if (rightCol) rightCol.classList.remove('d-none');
+                if (middleCol) {
+                    middleCol.classList.remove('col-lg-9');
+                    middleCol.classList.add('col-lg-6');
+                }
+            }
+
             // EĞER "ARKADAŞINA YAZ" PANELİNE GEÇİLDİYSE LİSTEYİ GÜNCELLE
             if (targetId === 'panel-write') {
                 // DOM'un görünür hale gelmesi için ufak bir gecikme
@@ -463,4 +483,164 @@ function changeAnnouncementPage(newPage) {
     
     currentAnnouncementPage = newPage;
     renderAnnouncementPagination();
+}
+
+// --- FOTOĞRAF SİSTEMİ ---
+let currentPhotoCategory = 'personal';
+
+// 1. Tab Geçişlerini Başlat
+const photoTabs = document.querySelectorAll('.photo-tab-btn');
+photoTabs.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        // Aktif sınıfını değiştir
+        photoTabs.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Kategoriyi güncelle ve yükle
+        currentPhotoCategory = btn.getAttribute('data-category');
+        loadPhotos();
+    });
+});
+
+// 2. Fotoğrafları Getir
+async function loadPhotos() {
+    const gallery = document.getElementById('photoGallery');
+    gallery.innerHTML = '<div class="col-12 text-center py-4"><div class="spinner-border text-primary"></div></div>';
+
+    try {
+        const response = await fetch(`/api/photos?category=${currentPhotoCategory}`, {
+            headers: { 'x-access-token': localStorage.getItem('token') }
+        });
+        const photos = await response.json();
+
+        gallery.innerHTML = '';
+
+        if (photos.length === 0) {
+            gallery.innerHTML = `
+                <div class="col-12 text-center py-5 text-muted">
+                    <i class="far fa-images fa-3x mb-3"></i>
+                    <p>Bu kategoride henüz fotoğraf yok.</p>
+                </div>`;
+            return;
+        }
+
+        photos.forEach(photo => {
+            const div = document.createElement('div');
+            div.className = 'col-6 col-md-4 col-lg-3';
+            // Fotoğrafa tıklayınca openLightbox çağrılır
+            div.innerHTML = `
+                <div class="position-relative group-hover-container" style="height: 150px; border-radius: 15px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1);">
+                    <img src="${photo.url}" class="w-100 h-100" style="object-fit: cover; cursor: pointer;" 
+                         onclick="openLightbox('${photo.url}')">
+                    <button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle shadow-sm" 
+                            style="width:30px; height:30px; display:flex; align-items:center; justify-content:center;"
+                            onclick="deletePhoto(${photo.id})">
+                        <i class="fas fa-trash-alt" style="font-size:0.8rem"></i>
+                    </button>
+                </div>
+            `;
+            gallery.appendChild(div);
+        });
+
+    } catch (error) {
+        console.error(error);
+        gallery.innerHTML = '<div class="col-12 text-danger text-center">Yüklenirken hata oluştu.</div>';
+    }
+}
+
+// --- LIGHTBOX (TAM EKRAN FOTOĞRAF) ---
+const lightboxModal = document.getElementById('lightboxModal');
+const lightboxImg = document.getElementById('lightboxImage');
+const lightboxClose = document.querySelector('.lightbox-close');
+
+function openLightbox(url) {
+    if (lightboxModal && lightboxImg) {
+        lightboxImg.src = url;
+        lightboxModal.classList.remove('d-none');
+        lightboxModal.style.display = 'flex'; // Flex ile ortalama çalışsın
+    }
+}
+
+// Kapatma İşlemleri
+if (lightboxModal) {
+    // X butonuna basınca
+    lightboxClose.addEventListener('click', () => {
+        lightboxModal.classList.add('d-none');
+    });
+
+    // Boşluğa (arkaplan) basınca
+    lightboxModal.addEventListener('click', (e) => {
+        if (e.target === lightboxModal) {
+            lightboxModal.classList.add('d-none');
+        }
+    });
+}
+
+// 3. Dosya Seçimi ve Yükleme
+const photoInput = document.getElementById('photoInput');
+if (photoInput) {
+    photoInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('photo', file);
+        formData.append('category', currentPhotoCategory);
+
+        const statusDiv = document.getElementById('uploadStatus');
+        statusDiv.innerText = "Yükleniyor...";
+        statusDiv.className = "mt-2 small fw-bold text-primary";
+
+        try {
+            const response = await fetch('/api/photos/upload', {
+                method: 'POST',
+                headers: { 'x-access-token': localStorage.getItem('token') },
+                body: formData // Content-Type otomatik ayarlanır
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                statusDiv.innerText = "Yüklendi!";
+                statusDiv.className = "mt-2 small fw-bold text-success";
+                
+                // Galeriyi yenile
+                loadPhotos();
+                
+                // Mesajı 2 sn sonra sil
+                setTimeout(() => { statusDiv.innerText = ""; }, 2000);
+            } else {
+                statusDiv.innerText = result.message;
+                statusDiv.className = "mt-2 small fw-bold text-danger";
+            }
+
+        } catch (error) {
+            console.error(error);
+            statusDiv.innerText = "Hata oluştu.";
+            statusDiv.className = "mt-2 small fw-bold text-danger";
+        }
+        
+        // Input'u sıfırla ki aynı dosyayı tekrar seçebilelim
+        photoInput.value = '';
+    });
+}
+
+// 4. Fotoğraf Sil
+async function deletePhoto(id) {
+    if (!confirm("Bu fotoğrafı silmek istediğinize emin misiniz?")) return;
+
+    try {
+        const response = await fetch(`/api/photos/${id}`, {
+            method: 'DELETE',
+            headers: { 'x-access-token': localStorage.getItem('token') }
+        });
+
+        if (response.ok) {
+            loadPhotos(); // Listeyi yenile
+        } else {
+            alert("Silinemedi.");
+        }
+    } catch (error) {
+        console.error(error);
+    }
 }

@@ -58,6 +58,7 @@ require("./app/routes/memory.routes")(app);
 require("./app/routes/teacher.routes")(app);
 require('./app/routes/notification.routes')(app);
 require('./app/routes/announcement.routes')(app);
+require('./app/routes/photo.routes')(app);
 
 // --- SUNUCUYU BAŞLAT ---
 const PORT = process.env.PORT || 8080;

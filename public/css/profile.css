@@ -306,3 +306,80 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        /* Fotoğraf Tab Butonları */
+        .photo-tab-btn {
+            border: 1px solid rgba(108, 92, 231, 0.3) !important; /* Hafif mor kenarlık */
+            color: #6c5ce7 !important; /* Yazı rengi */
+            background-color: rgba(255, 255, 255, 0.4) !important; /* Hafif transparan arka plan */
+            transition: all 0.3s ease;
+        }
+
+        .photo-tab-btn:hover {
+            background-color: rgba(108, 92, 231, 0.1) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .photo-tab-btn.active {
+            background-color: #6c5ce7 !important; /* Aktifken mor arka plan */
+            color: white !important;
+            border-color: #6c5ce7 !important;
+            box-shadow: 0 4px 10px rgba(108, 92, 231, 0.4);
+        }
+
+        /* --- LIGHTBOX (TAM EKRAN FOTOĞRAF) --- */
+        .lightbox-overlay {
+            position: fixed;
+            z-index: 9999; /* En üstte */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.9); /* Koyu siyah arka plan */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeInLightbox 0.3s forwards;
+        }
+
+        @keyframes fadeInLightbox {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .lightbox-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            animation: zoomIn 0.3s;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.9); }
+            to { transform: scale(1); }
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            z-index: 10000;
+        }
+
+        .lightbox-close:hover,
+        .lightbox-close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
