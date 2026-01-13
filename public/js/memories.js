@@ -280,7 +280,17 @@ function setupMemoryModal() {
 // --- 3. ANILARI LİSTELEME ---
 async function loadMemories(type) {
     const container = document.getElementById('myMemoriesList');
+    const charCountContainer = document.getElementById('memoryCharacterCount');
+    const charCountVal = document.getElementById('charCountVal');
+
     container.innerHTML = '<div class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</div>';
+    
+    // Sayaç Görünürlüğü (Sadece bana gelenlerde göster)
+    if (type === 'received') {
+        if(charCountContainer) charCountContainer.classList.remove('d-none');
+    } else {
+        if(charCountContainer) charCountContainer.classList.add('d-none');
+    }
 
     const apiURL = type === 'received' ? '/api/memory/my-memories' : '/api/memory/sent-memories';
 
@@ -296,6 +306,30 @@ async function loadMemories(type) {
         
         const memories = await response.json();
         container.innerHTML = '';
+
+        // KARAKTER SAYACI HESAPLAMA
+        let totalChars = 0;
+        if (type === 'received') {
+            memories.forEach(m => {
+                // Sadece onaylanmış veya bekleyenleri sayalım (Reddedilenler yıllıkta yer almaz genelde)
+                // Ancak kullanıcı hepsini görüyorsa hepsini saymak daha doğru olabilir.
+                // İsteğe göre: Sadece 'approved' olanlar da sayılabilir. 
+                // Şimdilik hepsini sayıyorum.
+                if (m.content) totalChars += m.content.length;
+            });
+
+            if (charCountVal) {
+                charCountVal.innerText = totalChars;
+                // Limit Kontrolü
+                if (totalChars > 13000) {
+                    charCountContainer.classList.remove('text-success', 'text-dark');
+                    charCountContainer.classList.add('text-danger');
+                } else {
+                    charCountContainer.classList.remove('text-danger', 'text-dark');
+                    charCountContainer.classList.add('text-success');
+                }
+            }
+        }
 
         if (!Array.isArray(memories) || memories.length === 0) {
             const msg = type === 'received' ? "Henüz kimse sana yazmamış." : "Henüz kimseye yazmamışsın.";

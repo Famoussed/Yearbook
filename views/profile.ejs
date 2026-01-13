@@ -185,13 +185,18 @@
                     <div id="panel-memories" class="content-section d-none fade-in">
                         <h4 class="fw-bold mb-4">Anı Defteri</h4>
 
-                        <div class="d-flex justify-content-center gap-3 mb-4">
+                        <div class="d-flex justify-content-center gap-3 mb-3">
                             <button class="btn btn-primary rounded-pill px-4 active-tab-btn" id="btnShowReceived">
                                 <i class="fas fa-inbox me-2"></i>Bana Yazılanlar
                             </button>
                             <button class="btn btn-outline-primary rounded-pill px-4" id="btnShowSent">
                                 <i class="fas fa-paper-plane me-2"></i>Benim Yazdıklarım
                             </button>
+                        </div>
+
+                        <!-- KARAKTER SAYACI -->
+                        <div id="memoryCharacterCount" class="text-center mb-4 fw-bold small d-none">
+                            Toplam Karakter: <span id="charCountVal">0</span> / 13000
                         </div>
 
                         <div id="myMemoriesList" class="d-flex flex-column gap-4">
