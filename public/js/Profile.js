@@ -51,14 +51,73 @@ async function loadYearbookStats() {
         if (response.ok) {
             const stats = await response.json();
             
+            // Sayıları Güncelle
             const elStudent = document.getElementById('statStudentCount');
             const elTeacher = document.getElementById('statTeacherCount');
 
             if (elStudent) elStudent.innerText = stats.studentCount;
             if (elTeacher) elTeacher.innerText = stats.teacherCount;
+
+            // Progress Bar Güncelle
+            updateYearbookStatusUI(stats.yearbookStatus);
         }
     } catch (error) {
         console.error("İstatistik yüklenemedi:", error);
+    }
+}
+
+function updateYearbookStatusUI(status) {
+    const progressBar = document.getElementById('yearbookProgressBar');
+    const progressText = document.getElementById('progressText');
+    const statusDesc = document.getElementById('statusDescription');
+    const statusLabel = document.getElementById('status'); // Yukarıdaki tablo içindeki durum
+
+    let percent = 0;
+    let text = "Bilinmiyor";
+    let icon = "fa-circle-notch";
+    let color = "text-muted";
+
+    switch (parseInt(status)) {
+        case 1:
+            percent = 25;
+            text = "Hazırlık Aşamasında";
+            icon = "fa-tools";
+            color = "text-primary";
+            break;
+        case 2:
+            percent = 50;
+            text = "İçerik Toplama";
+            icon = "fa-pen-alt";
+            color = "text-info";
+            break;
+        case 3:
+            percent = 75;
+            text = "Komite İncelemesi";
+            icon = "fa-search";
+            color = "text-warning";
+            break;
+        case 4:
+            percent = 100;
+            text = "Basım & Dağıtım";
+            icon = "fa-check-circle";
+            color = "text-success";
+            break;
+        default:
+            percent = 0;
+            text = "Başlatılmadı";
+    }
+
+    if(progressBar) progressBar.style.width = `${percent}%`;
+    if(progressText) progressText.innerText = `${percent}%`;
+    
+    if(statusDesc) {
+        statusDesc.innerHTML = `<i class="fas ${icon} ${color} me-1"></i> ${text}`;
+    }
+
+    // Yukarıdaki tablodaki durum yazısını da güncelle
+    if(statusLabel) {
+        statusLabel.innerText = text;
+        statusLabel.className = `val ${color} fw-bold`;
     }
 }
 

@@ -279,14 +279,14 @@
                     <div class="mt-4">
                         <div class="d-flex justify-content-between small fw-bold mb-1">
                             <span>Tamamlanma</span>
-                            <span>75%</span>
+                            <span id="progressText">0%</span>
                         </div>
                         <div class="progress-glass">
-                            <div class="progress-bar-glass"></div>
+                            <div id="yearbookProgressBar" class="progress-bar-glass" style="width: 0%"></div>
                         </div>
-                        <p class="text-center mt-3 small text-muted">
-                            <i class="fas fa-check-circle text-success me-1"></i>
-                            Yıllıklar şu an inceleme aşamasında.
+                        <p class="text-center mt-3 small text-muted" id="statusDescription">
+                            <i class="fas fa-spinner fa-spin me-1"></i>
+                            Durum yükleniyor...
                         </p>
                     </div>
                 </div>
