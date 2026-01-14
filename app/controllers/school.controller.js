@@ -24,3 +24,19 @@ exports.createSchool = (req, res) => {
       });
     });
 };
+
+// Tüm Okulları Listele (Dropdown için)
+exports.getAllSchools = (req, res) => {
+  School.findAll({
+    attributes: ['id', 'name', 'city'], // Sadece gerekli alanlar
+    order: [['name', 'ASC']] // İsme göre sırala
+  })
+  .then(data => {
+    res.send(data);
+  })
+  .catch(err => {
+    res.status(500).send({
+      message: err.message || "Okullar listelenirken hata oluştu."
+    });
+  });
+};

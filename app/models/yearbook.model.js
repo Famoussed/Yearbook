@@ -33,7 +33,14 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.INTEGER,
             allowNull: false,
             unique: false,
-            defaultValue: 1 // Varsayılan durum: 1 (Örn: Oluşturuldu)
+            defaultValue: 1, // Varsayılan durum: 1 (Hazırlık)
+            validate: {
+                isInt: {
+                    msg: "Yıllık durumu sadece sayısal bir değer (1-4) olabilir."
+                },
+                min: 1,
+                max: 4
+            }
         },
         school_id: {
             //Bu userdaki school_id'nin aynısı aynı zamanda bizim FK'mız olucak

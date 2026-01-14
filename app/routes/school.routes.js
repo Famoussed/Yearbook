@@ -12,4 +12,7 @@ module.exports = function (app) {
 
     // Okul Ekleme Rotası (Sadece giriş yapmış kullanıcılar/Admin)
     app.post("/api/school/create", controller.createSchool);
+
+    // Tüm Okulları Listele (Kayıt ekranı için - Herkese Açık)
+    app.get("/api/schools", controller.getAllSchools);
 };

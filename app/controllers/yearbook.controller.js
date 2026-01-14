@@ -23,6 +23,10 @@ exports.getAllYearbooks = (req, res) => {
 };
 
 exports.createYearBook = (req, res) => {
+  // Status Değerini Güvenli Hale Getir
+  let status = parseInt(req.body.YearBookStatus);
+  if (isNaN(status)) status = 1; // Eğer sayı değilse varsayılan 1 olsun
+
   // YearBook Oluşturma
   YearBook.create({
     YearBookName: req.body.YearBookName,
@@ -30,7 +34,7 @@ exports.createYearBook = (req, res) => {
     school_id: req.body.school_id,
     YearBookCover: req.body.YearBookCover,
     PageSizes: req.body.PageSizes,
-    YearBookStatus: req.body.YearBookStatus,
+    YearBookStatus: status, // Parsed integer
     PaperType: req.body.PaperType,
     ResponsedPerson: req.body.ResponsedPerson,
   })

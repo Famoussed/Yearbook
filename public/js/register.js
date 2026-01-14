@@ -1,14 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. URL'den Rol Parametresini Oku (?role=student gibi)
+    // 1. URL'den 'role' parametresini al
     const urlParams = new URLSearchParams(window.location.search);
     const role = urlParams.get('role');
-
-    // DOM Elemanlarını Seç
     const roleInput = document.getElementById('roleInput');
+    
     const pageTitle = document.getElementById('pageTitle');
     const headerIcon = document.getElementById('headerIcon');
     const studentFields = document.getElementById('studentFields');
     const teacherFields = document.getElementById('teacherFields');
+
+    // OKULLARI YÜKLE
+    loadSchools();
 
     // 2. Rol Kontrolü ve Arayüz Ayarı
     if (role === 'student') {
@@ -70,7 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = Object.fromEntries(formData.entries()); //formData'daki verileri JSON'a çevirir
 
             // Sayısal Dönüşümler
-            // Input valueları integer'a dönüştürüyoruz çünkü veritabanında tip güvenliği ekledim
             if (data.school_id) data.school_id = parseInt(data.school_id);
 
             if (data.role === 'student' && data.grade_level_id) {
@@ -99,3 +100,36 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+// --- YARDIMCI FONKSİYONLAR ---
+
+async function loadSchools() {
+    const select = document.getElementById('schoolSelect');
+    if (!select) return;
+
+    try {
+        const response = await fetch('/api/schools');
+        const schools = await response.json();
+
+        select.innerHTML = '<option value="" selected disabled>Okulunuzu Seçin</option>';
+
+        if (schools.length === 0) {
+            const opt = document.createElement('option');
+            opt.disabled = true;
+            opt.innerText = "Kayıtlı okul bulunamadı.";
+            select.appendChild(opt);
+            return;
+        }
+
+        schools.forEach(school => {
+            const opt = document.createElement('option');
+            opt.value = school.id;
+            opt.innerText = `${school.name} (${school.city})`;
+            select.appendChild(opt);
+        });
+
+    } catch (error) {
+        console.error("Okullar yüklenemedi:", error);
+        select.innerHTML = '<option value="" disabled>Okullar yüklenemedi!</option>';
+    }
+}
