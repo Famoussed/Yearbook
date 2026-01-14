@@ -15,17 +15,33 @@ document.addEventListener("DOMContentLoaded", () => {
             profileIcon.classList.remove("d-none");
             profileIcon.style.marginLeft = "auto";
         }
-    }
 
-    // --- PROFILE PAGE AYARLARI ---
-    if (userDataString) {
+        // --- MENÜ LİNKLERİNİ ROLA GÖRE GÜNCELLE ---
         try {
             const user = JSON.parse(userDataString);
-            if (user.role_id == 1) {
-                // Öğrenciye özel işlemler...
+            
+            // Linkleri Bul
+            // Landing_Page.ejs'de bu linklere ID vermedik, href ile bulacağız
+            const profileLink = document.querySelector('a[href="/profile"]');
+            const dashboardLink = document.querySelector('a[href="/dashboard"]');
+
+            if (user.role === "ROLE_TEACHER") {
+                if (profileLink) {
+                    profileLink.href = "/teacherpanel";
+                    profileLink.innerHTML = '<i class="fas fa-chalkboard-teacher me-2 text-info"></i>Öğretmen Paneli';
+                }
+                if (dashboardLink) dashboardLink.style.display = 'none'; // Gerek yoksa gizle
+            } else if (user.role === "ROLE_ADMIN") {
+                if (profileLink) {
+                    profileLink.href = "/admin";
+                    profileLink.innerHTML = '<i class="fas fa-user-shield me-2 text-danger"></i>Yönetici Paneli';
+                }
+                if (dashboardLink) dashboardLink.style.display = 'none';
             }
+            // Öğrenci için zaten varsayılan /profile kalacak
+
         } catch (e) {
-            console.error("User parse hatası:", e);
+            console.error("User parse hatası (Menü Ayarı):", e);
         }
     }
 

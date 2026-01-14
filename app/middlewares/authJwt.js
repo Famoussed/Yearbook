@@ -1,8 +1,10 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config");
+const db = require("../models");
+const User = db.users;
+const Role = db.roles;
 
 // 1. MEVCUT FONKSİYON (API Koruması İçin)
-// Token yoksa 403 hatası döner (Frontend fetch ile yakalar)
 const verifyToken = (req, res, next) => {
   let token = req.cookies.accessToken;
 
@@ -21,18 +23,15 @@ const verifyToken = (req, res, next) => {
 };
 
 // 2. YENİ EKLENEN FONKSİYON (Sayfa/View Koruması İçin)
-// Token yoksa direkt Login sayfasına atar (Tarayıcı yönlendirir)
 const verifyTokenForView = (req, res, next) => {
   let token = req.cookies.accessToken;
 
   if (!token) {
-    // Token yoksa Giriş sayfasına postala
     return res.redirect("/login");
   }
 
   jwt.verify(token, process.env.JWT_SECRET || config.secret, (err, decoded) => {
     if (err) {
-      // Token bozuksa veya süresi dolmuşsa da Giriş sayfasına at
       return res.redirect("/login");
     }
     
@@ -41,10 +40,76 @@ const verifyTokenForView = (req, res, next) => {
   });
 };
 
+// --- ROL KONTROLLERİ ---
+
+// Admin Kontrolü
+const isAdmin = async (req, res, next) => {
+  try {
+    const user = await User.findByPk(req.userId);
+    const role = await Role.findByPk(user.role_id);
+
+    if (role.name === "admin") {
+      next();
+      return;
+    }
+
+    // Yetkisiz ise 404 (Sayfa yokmuş gibi davran)
+    res.status(404).send("Sayfa bulunamadı.");
+  } catch (error) {
+    res.status(500).send({ message: "Rol kontrolü yapılamadı." });
+  }
+};
+
+// Öğretmen Kontrolü
+const isTeacher = async (req, res, next) => {
+  try {
+    const user = await User.findByPk(req.userId);
+    const role = await Role.findByPk(user.role_id);
+
+    if (role.name === "teacher" || role.name === "admin") { // Admin de girebilsin mi? Genelde evet.
+      next();
+      return;
+    }
+
+    res.status(404).send("Sayfa bulunamadı.");
+  } catch (error) {
+    res.status(500).send({ message: "Rol kontrolü yapılamadı." });
+  }
+};
+
+// Öğrenci Kontrolü (Profil sayfası için)
+const isStudent = async (req, res, next) => {
+  try {
+    const user = await User.findByPk(req.userId);
+    const role = await Role.findByPk(user.role_id);
+
+    if (role.name === "student") { // Sadece öğrenciler girebilir
+      next();
+      return;
+    }
+
+    // Öğretmen ise Teacher Panel'e yönlendir (Opsiyonel ama mantıklı)
+    if (role.name === "teacher") {
+        return res.redirect("/teacherpanel");
+    }
+    
+    if (role.name === "admin") {
+        return res.redirect("/admin");
+    }
+
+    res.status(404).send("Sayfa bulunamadı.");
+  } catch (error) {
+    res.status(500).send({ message: "Rol kontrolü yapılamadı." });
+  }
+};
+
 // Paketi Hazırla
 const authJwt = {
   verifyToken: verifyToken,
-  verifyTokenForView: verifyTokenForView // 👈 İkisini de dışarı açıyoruz
+  verifyTokenForView: verifyTokenForView,
+  isAdmin: isAdmin,
+  isTeacher: isTeacher,
+  isStudent: isStudent
 };
 
 module.exports = authJwt;
