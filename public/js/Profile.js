@@ -219,18 +219,20 @@ function renderPagination() {
         item.className = "glass-card p-3 mb-0 d-flex align-items-center justify-content-between";
         item.style.borderLeft = "4px solid var(--accent-color)";
         
+        const safeFullname = escapeHTML(student.fullname);
+        
         item.innerHTML = `
             <div class="d-flex align-items-center">
                 <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" 
                      style="width:45px; height:45px; color:var(--accent-color); font-weight:bold;">
-                    ${student.fullname.charAt(0)}
+                    ${safeFullname.charAt(0)}
                 </div>
                 <div>
-                    <h6 class="mb-0 fw-bold">${student.fullname}</h6>
+                    <h6 class="mb-0 fw-bold">${safeFullname}</h6>
                     <small class="text-muted">Öğrenci</small>
                 </div>
             </div>
-            <button class="btn btn-sm btn-primary rounded-pill px-3" onclick="openWriteModal(${student.student_id}, '${student.fullname}')">
+            <button class="btn btn-sm btn-primary rounded-pill px-3" onclick="openWriteModal(${student.student_id}, '${safeFullname.replace(/'/g, "\\'")}')">
                 <i class="fas fa-pen me-1"></i> Yaz
             </button>
         `;
@@ -413,9 +415,23 @@ function decreaseBadgeCount() {
     }
 }
 
+// --- GÜVENLİK FONKSİYONU ---
+function escapeHTML(str) {
+    if (!str) return "";
+    return String(str).replace(/[&<>'"/]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;',
+            '/': '&#x2F;'
+        }[tag]));
+}
+
 // --- DUYURU PAGINATION DEĞİŞKENLERİ ---
 let allAnnouncements = [];
-const ANNOUNCEMENTS_PER_PAGE = 5; // Duyuru başına düşen miktar
+const ANNOUNCEMENTS_PER_PAGE = 3; // Duyuru başına düşen miktar
 let currentAnnouncementPage = 1;
 
 async function loadAnnouncements() {
@@ -466,13 +482,16 @@ function renderAnnouncementPagination() {
 
     // 1. Listeyi Render Et
     pageItems.forEach(ann => {
+        const safeTitle = escapeHTML(ann.title);
+        const safeContent = escapeHTML(ann.content);
         const date = new Date(ann.createdAt).toLocaleDateString('tr-TR');
+        
         const card = document.createElement('div');
         card.className = "alert alert-light border shadow-sm mb-3";
         card.innerHTML = `
             <small class="text-muted"><i class="far fa-calendar-alt me-1"></i>${date}</small>
-            <h6 class="fw-bold mt-1 text-primary">${ann.title}</h6>
-            <p class="small mb-0 text-dark">${ann.content}</p>
+            <h6 class="fw-bold mt-1 text-primary">${safeTitle}</h6>
+            <p class="small mb-0 text-dark">${safeContent}</p>
         `;
         listContainer.appendChild(card);
     });

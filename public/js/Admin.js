@@ -12,52 +12,54 @@ document.addEventListener("DOMContentLoaded", () => {
     setupCreateSchool();
 });
 
-// --- YENİ EKLENEN: TABLOYU DOLDURMA FONKSİYONU ---
-function loadDashboardData() {
-    const tableBody = document.getElementById('yearbooksTableBody');
-    if (!tableBody) return;
+// --- GÜVENLİK FONKSİYONU ---
+function escapeHTML(str) {
+    if (!str) return "";
+    return String(str).replace(/[&<>'"/]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag]));
+}
 
-    fetch('/api/yearbooks')
-        .then(response => response.json())
-        .then(data => {
-            tableBody.innerHTML = ''; // "Yükleniyor..." yazısını temizle
+// 1. MEVCUT YILLIKLARI LİSTELE
+async function loadYearbooks() {
+    const tableBody = document.getElementById('yearbookTableBody');
+    tableBody.innerHTML = ''; // "Yükleniyor..." yazısını temizle
 
-            if (data.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5" class="text-center py-3">Henüz hiç yıllık oluşturulmamış.</td></tr>';
-                return;
-            }
+    try {
+        const response = await fetch('/api/yearbooks');
+        const data = await response.json();
 
-            data.forEach(yearbook => {
-                const row = document.createElement('tr');
-                
-                // Tarihi güzel formatla (Örn: 14 Ara 2025)
-                const date = new Date(yearbook.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' });
+        if (data.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="5" class="text-center py-3">Henüz hiç yıllık oluşturulmamış.</td></tr>';
+            return;
+        }
 
-                // Duruma göre renk ver
-                let statusBadge = `<span class="status-badge status-pending">${yearbook.YearBookStatus}</span>`;
-                if (yearbook.YearBookStatus === 'Yayında') {
-                    statusBadge = `<span class="status-badge status-active">${yearbook.YearBookStatus}</span>`;
-                }
+        data.forEach((yb, index) => {
+            const date = new Date(yb.createdAt).toLocaleDateString('tr-TR');
+            const safeSchoolName = escapeHTML(yb.school ? yb.school.name : "Okul Bilgisi Yok");
+            const safeYearbookName = escapeHTML(yb.YearBookName);
+            const safeStatus = escapeHTML(yb.YearBookStatus || "Aktif");
 
-                // Okul Adı Kontrolü (Silinmiş okul hatası vermesin diye)
-                const schoolName = yearbook.school ? yearbook.school.name : '<span class="text-danger">Okul Silinmiş</span>';
-
-                row.innerHTML = `
-                    <td class="fw-bold">${schoolName}</td>
-                    <td>${yearbook.ResponsedPerson}</td>
-                    <td>${date}</td>
-                    <td>${statusBadge}</td>
-                    <td class="fw-bold text-primary">${yearbook.YearBookName}</td> 
-                `;
-                // 👆 Son sütuna Yıllık Adını koyduk
-                
-                tableBody.appendChild(row);
-            });
-        })
-        .catch(err => {
-            console.error('Veri hatası:', err);
-            tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Veriler yüklenemedi.</td></tr>';
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${safeSchoolName}</td>
+                <td>${safeYearbookName}</td>
+                <td><span class="badge bg-success">${safeStatus}</span></td>
+                <td>${date}</td>
+            `;
+            tableBody.appendChild(row);
         });
+
+    } catch (error) {
+        console.error("Yıllıklar yüklenemedi:", error);
+        tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Veriler yüklenemedi.</td></tr>';
+    }
 }
 
 // --- MEVCUT NAVİGASYON KODLARIN (Değişmedi, sadece fonksiyon içine aldım düzenli olsun diye) ---

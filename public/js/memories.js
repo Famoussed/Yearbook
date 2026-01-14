@@ -18,6 +18,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// --- GÜVENLİK FONKSİYONU ---
+function escapeHTML(str) {
+    if (!str) return "";
+    return String(str).replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag]));
+}
+
 // --- GLOBAL FONKSİYON: Onaylama/Reddetme (Gelen Anılar İçin) ---
 async function updateMemoryStatus(memoryId, decision) {
     const actionName = decision === 'approved' ? "Yıllığa eklemek" : "Reddetmek";
@@ -186,6 +199,10 @@ async function loadClassmates() {
         }
 
         classmates.forEach(student => {
+            const safeFullname = escapeHTML(student.fullname);
+            const safeClassInfo = escapeHTML(student.class_info || "");
+            const safeStudentNumber = escapeHTML(student.student_number || "");
+
             const card = document.createElement('div');
             card.className = "glass-card p-3 d-flex justify-content-between align-items-center friend-card mb-3";
             card.innerHTML = `
@@ -194,13 +211,13 @@ async function loadClassmates() {
                         <i class="fas fa-user-graduate text-muted"></i>
                     </div>
                     <div>
-                        <h6 class="fw-bold mb-0 friend-name">${student.fullname}</h6>
-                        <small class="text-muted">${student.student_number || ""} - ${student.class_info || ""}</small>
+                        <h6 class="fw-bold mb-0 friend-name">${safeFullname}</h6>
+                        <small class="text-muted">${safeStudentNumber} - ${safeClassInfo}</small>
                     </div>
                 </div>
                 <button class="btn btn-sm btn-outline-primary rounded-pill px-3 write-btn" 
                         data-id="${student.student_id}" 
-                        data-name="${student.fullname}">
+                        data-name="${safeFullname}">
                     <i class="fas fa-pen-fancy me-1"></i> Yıllığına Yaz
                 </button>
             `;
@@ -349,6 +366,7 @@ async function loadMemories(type) {
                 personName = memory.sender ? memory.sender.user.fullname : "Gizli";
                 
                 if (memory.student_status === 'pending') {
+                    // ... (footerActions aynı kalacak) ...
                     footerActions = `
                         <div class="mt-3 d-flex gap-2 justify-content-end border-top pt-3" style="border-color: rgba(0,0,0,0.05) !important;">
                             <button class="btn btn-sm btn-outline-danger rounded-pill px-3" 
@@ -386,13 +404,15 @@ async function loadMemories(type) {
                 else if(memory.student_status === 'rejected') badges += '<span class="badge bg-danger">Arkadaş: Reddetti</span>';
                 else badges += '<span class="badge bg-success">Arkadaş: Onayladı</span>';
 
+                const safePersonNameForModal = escapeHTML(personName).replace(/'/g, "\\'"); // Modal için ekstra kaçış
+
                 // 👇 YENİ EKLENEN KISIM: DÜZENLEME BUTONU 👇
                 let editButtonHtml = '';
                 // Sadece 'Reddedildi' veya 'Bekliyor' ise düzenlenebilir olsun
                 
                     editButtonHtml = `
                         <button class="btn btn-sm btn-outline-secondary rounded-pill ms-2" 
-                            onclick="openEditModal(${memory.id}, '${personName}')">
+                            onclick="openEditModal(${memory.id}, '${safePersonNameForModal}')">
                             <i class="fas fa-edit me-1"></i>Düzenle
                         </button>
                     `;
@@ -400,6 +420,9 @@ async function loadMemories(type) {
                 // Badges ve Butonu birleştir
                 footerActions = `<div class="mt-3 text-end d-flex align-items-center justify-content-end">${badges} ${editButtonHtml}</div>`;
             }
+
+            const safePersonName = escapeHTML(personName);
+            const safeContent = escapeHTML(memory.content);
 
             const item = document.createElement('div');
             item.className = "glass-card p-4 mb-3"; 
@@ -411,14 +434,14 @@ async function loadMemories(type) {
                         </div>
                         <div>
                             <small class="text-muted" style="font-size:0.7rem;">${headerText}</small>
-                            <h6 class="fw-bold mb-0">${personName}</h6>
+                            <h6 class="fw-bold mb-0">${safePersonName}</h6>
                             <small class="text-muted" style="font-size:0.8rem;">${date}</small>
                         </div>
                     </div>
                 </div>
-                <p class="mb-0 text-dark" style="font-style: italic;">"${memory.content}"</p>
+                <p class="mb-0 text-dark" style="font-style: italic;">"${safeContent}"</p>
                 ${footerActions}
-                <div id="content-storage-${memory.id}" class="d-none">${memory.content}</div>
+                <div id="content-storage-${memory.id}" class="d-none">${safeContent}</div>
             `;
             container.appendChild(item);
         });

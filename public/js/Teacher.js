@@ -177,6 +177,19 @@ async function decideMemory(memoryId, decision) {
     }
 }
 
+// --- GÜVENLİK FONKSİYONU ---
+function escapeHTML(str) {
+    if (!str) return "";
+    return String(str).replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag]));
+}
+
 // --- 4. ÖĞRENCİ LİSTESİ ---
 async function loadStudents() {
     const tableBody = document.getElementById('studentListTable');
@@ -194,11 +207,14 @@ async function loadStudents() {
         }
 
         students.forEach((student, index) => {
+            const safeFullname = escapeHTML(student.fullname);
+            const safeNumber = escapeHTML(student.number || "-");
+
             const row = document.createElement('tr');
             row.innerHTML = `
                 <th scope="row" class="text-white">${index + 1}</th>
-                <td class="text-white">${student.fullname}</td>
-                <td class="text-white-50">${student.number || "-"}</td>
+                <td class="text-white">${safeFullname}</td>
+                <td class="text-white-50">${safeNumber}</td>
                 <td><span class="badge bg-success rounded-pill">Aktif</span></td>
             `;
             tableBody.appendChild(row);
