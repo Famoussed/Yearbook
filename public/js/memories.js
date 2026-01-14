@@ -439,7 +439,7 @@ async function loadMemories(type) {
                         </div>
                     </div>
                 </div>
-                <p class="mb-0 text-dark" style="font-style: italic;">"${safeContent}"</p>
+                <p class="mb-0 text-dark memory-text" style="font-style: italic; word-wrap: break-word; white-space: pre-wrap;">"${safeContent}"</p>
                 ${footerActions}
                 <div id="content-storage-${memory.id}" class="d-none">${safeContent}</div>
             `;
