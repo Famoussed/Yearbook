@@ -29,10 +29,11 @@ module.exports = (sequelize, Sequelize) => {
             unique: false
         },
         YearBookStatus: {
-            //Yıllık Hangi Aşamada
-            type: Sequelize.STRING,
+            //Yıllık Hangi Aşamada (1, 2, 3, 4)
+            type: Sequelize.INTEGER,
             allowNull: false,
-            unique: false
+            unique: false,
+            defaultValue: 1 // Varsayılan durum: 1 (Örn: Oluşturuldu)
         },
         school_id: {
             //Bu userdaki school_id'nin aynısı aynı zamanda bizim FK'mız olucak

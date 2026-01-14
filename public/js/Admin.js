@@ -25,6 +25,13 @@ function escapeHTML(str) {
         }[tag]));
 }
 
+// DASHBOARD VERİLERİNİ TOPLU YÜKLEME FONKSİYONU
+async function loadDashboardData() {
+    console.log("Dashboard verileri yükleniyor...");
+    await loadYearbooks();
+    // İleride buraya loadStats() gibi fonksiyonlar da eklenebilir.
+}
+
 // 1. MEVCUT YILLIKLARI LİSTELE
 async function loadYearbooks() {
     const tableBody = document.getElementById('yearbookTableBody');
