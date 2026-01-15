@@ -37,7 +37,7 @@ async function updateMemoryStatus(memoryId, decision) {
     if (!confirm(`Bu anı yazısını ${actionName} istediğine emin misin?`)) return;
 
     try {
-        const response = await fetch('/api/memory/approve-student', {
+        const response = await fetchWithAuth('/api/memory/approve-student', {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
@@ -94,7 +94,7 @@ async function handleUpdateMemory(e) {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Güncelleniyor...';
 
     try {
-        const response = await fetch(`/api/memories/${memoryId}`, {
+        const response = await fetchWithAuth(`/api/memories/${memoryId}`, {
             method: 'PUT',
             headers: { 
                 'Content-Type': 'application/json',
@@ -181,7 +181,7 @@ async function loadClassmates() {
     listContainer.innerHTML = '<div class="text-center py-5"><i class="fas fa-spinner fa-spin"></i> Liste Yükleniyor...</div>';
 
     try {
-        const response = await fetch('/api/memory/classmates', { 
+        const response = await fetchWithAuth('/api/memory/classmates', { 
             headers: { 'x-access-token': localStorage.getItem('token') }
         });
         
@@ -260,7 +260,7 @@ function setupMemoryModal() {
             const data = Object.fromEntries(formData.entries());
 
             try {
-                const response = await fetch('/api/memory/create', {
+                const response = await fetchWithAuth('/api/memory/create', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
@@ -312,7 +312,7 @@ async function loadMemories(type) {
     const apiURL = type === 'received' ? '/api/memory/my-memories' : '/api/memory/sent-memories';
 
     try {
-        const response = await fetch(apiURL, { 
+        const response = await fetchWithAuth(apiURL, { 
             headers: { 'x-access-token': localStorage.getItem('token') }
         });
 

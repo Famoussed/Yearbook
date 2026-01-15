@@ -3,6 +3,7 @@ const config = require("../config/auth.config");
 const db = require("../models");
 const User = db.users;
 const Role = db.roles;
+const RefreshToken = db.refreshToken; // RefreshToken modelini ekle
 
 // 1. MEVCUT FONKSİYON (API Koruması İçin)
 const verifyToken = (req, res, next) => {
@@ -22,22 +23,67 @@ const verifyToken = (req, res, next) => {
   });
 };
 
-// 2. YENİ EKLENEN FONKSİYON (Sayfa/View Koruması İçin)
-const verifyTokenForView = (req, res, next) => {
-  let token = req.cookies.accessToken;
+// 2. GELİŞMİŞ VIEW KORUMASI (Token Refresh Destekli) 🚀
+const verifyTokenForView = async (req, res, next) => {
+  let accessToken = req.cookies.accessToken;
 
-  if (!token) {
-    return res.redirect("/login");
+  // A. Access Token Var ve Geçerli mi?
+  if (accessToken) {
+    jwt.verify(accessToken, process.env.JWT_SECRET || config.secret, (err, decoded) => {
+      if (!err) {
+        req.userId = decoded.id;
+        return next(); // Her şey yolunda, devam et
+      }
+      // Access Token geçersizse (Süresi dolmuş vs.) B planına geç (Refresh Token)
+    });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET || config.secret, (err, decoded) => {
-    if (err) {
+  // B. B Planı: Refresh Token Kontrolü
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.redirect("/login"); // İkisi de yoksa Giriş'e at
+  }
+
+  try {
+    // 1. Refresh Token'ı DB'de bul
+    let dbRefreshToken = await RefreshToken.findOne({ where: { token: refreshToken } });
+
+    if (!dbRefreshToken) {
+      return res.redirect("/login"); // Sahte veya silinmiş token
+    }
+
+    // 2. Süresi dolmuş mu?
+    if (RefreshToken.verifyExpiration(dbRefreshToken)) {
+      RefreshToken.destroy({ where: { id: dbRefreshToken.id } });
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
       return res.redirect("/login");
     }
+
+    // 3. YENİLEME BAŞARILI! Yeni Access Token üret
+    const user = await dbRefreshToken.getUser();
     
-    req.userId = decoded.id;
-    next();
-  });
+    let newAccessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET || config.secret, {
+      expiresIn: config.jwtExpiration, // Config'den süreyi al
+    });
+
+    // 4. Yeni Token'ı Cookie'ye yaz
+    res.cookie('accessToken', newAccessToken, {
+      httpOnly: true,
+      secure: false, // Canlıda true
+      sameSite: 'strict',
+      maxAge: 3600000 // 1 Saat (Config ile uyumlu olmalı)
+    });
+
+    // 5. Kullanıcı ID'sini set et ve sayfayı aç
+    req.userId = user.id;
+    return next();
+
+  } catch (err) {
+    console.error("View Refresh Hatası:", err);
+    return res.redirect("/login");
+  }
 };
 
 // --- ROL KONTROLLERİ ---

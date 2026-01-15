@@ -138,7 +138,7 @@ exports.signin = (req, res) => {
         httpOnly: true,
         secure: false, // Canlıda (HTTPS) true olmalı
         sameSite: 'strict',
-        maxAge: 3600000 // 1 Saat
+        maxAge: 10000 // 1 Saat
       });
 
       res.cookie('refreshToken', refreshTokenData, {

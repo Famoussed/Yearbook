@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = Object.fromEntries(formData.entries());
 
             try {
-                const response = await fetch('/api/announcements', {
+                const response = await fetchWithAuth('/api/announcements', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ function setupNavigation() {
 // --- 1. DASHBOARD İSTATİSTİKLERİ ---
 async function loadDashboardStats() {
     try {
-        const response = await fetch('/api/teacher/dashboard', { credentials: 'include' });
+        const response = await fetchWithAuth('/api/teacher/dashboard', { credentials: 'include' });
         const data = await response.json();
 
         document.getElementById('statTotalStudents').innerText = data.totalStudents;
@@ -114,7 +114,7 @@ async function loadPendingMemories() {
     listContainer.innerHTML = '<div class="text-center py-5 text-white-50"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Yükleniyor...</p></div>';
 
     try {
-        const response = await fetch('/api/teacher/pending-memories', { credentials: 'include' });
+        const response = await fetchWithAuth('/api/teacher/pending-memories', { credentials: 'include' });
         const memories = await response.json();
 
         listContainer.innerHTML = ''; // Listeyi temizle
@@ -158,7 +158,7 @@ async function decideMemory(memoryId, decision) {
     if (!confirm(decision === 'approved' ? "Bu yazıyı onaylıyor musun?" : "Bu yazıyı reddediyor musun?")) return;
 
     try {
-        const response = await fetch('/api/teacher/approve-memory', {
+        const response = await fetchWithAuth('/api/teacher/approve-memory', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ memory_id: memoryId, decision: decision }),
@@ -196,7 +196,7 @@ async function loadStudents() {
     tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-white-50">Yükleniyor...</td></tr>';
 
     try {
-        const response = await fetch('/api/teacher/students', { credentials: 'include' });
+        const response = await fetchWithAuth('/api/teacher/students', { credentials: 'include' });
         const students = await response.json();
 
         tableBody.innerHTML = '';

@@ -38,7 +38,7 @@ async function loadYearbooks() {
     tableBody.innerHTML = ''; // "Yükleniyor..." yazısını temizle
 
     try {
-        const response = await fetch('/api/yearbooks');
+        const response = await fetchWithAuth('/api/yearbooks');
         const data = await response.json();
 
         if (data.length === 0) {
@@ -108,7 +108,7 @@ function setupCreateYearbook() {
             if(data.school_id) data.school_id = parseInt(data.school_id);
 
             try {
-                const response = await fetch('/api/yearbook/create', {
+                const response = await fetchWithAuth('/api/yearbook/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data),
@@ -152,7 +152,7 @@ function setupCreateSchool() {
             const data = Object.fromEntries(formData.entries());
 
             try {
-                const response = await fetch('/api/school/create', {
+                const response = await fetchWithAuth('/api/school/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data),

@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // --- YILLIK İSTATİSTİKLERİ ---
 async function loadYearbookStats() {
     try {
-        const response = await fetch('/api/view/profile-stats', {
+        const response = await fetchWithAuth('/api/view/profile-stats', {
             headers: { 'x-access-token': localStorage.getItem('token') }
         });
 
@@ -224,7 +224,7 @@ function setupNavigation() {
 async function fetchClassmates() {
     console.log("DEBUG: fetchClassmates fonksiyonu çalıştı.");
     try {
-        const response = await fetch('/api/memory/classmates', {
+        const response = await fetchWithAuth('/api/memory/classmates', {
             headers: { 'x-access-token': localStorage.getItem('token') }
         });
 
@@ -349,7 +349,7 @@ function openWriteModal(studentId, studentName) {
 // 1. KIRMIZI BADGE KONTROLÜ
 async function checkUnreadCount() {
     try {
-        const response = await fetch('/api/notifications', {
+        const response = await fetchWithAuth('/api/notifications', {
             headers: { 'x-access-token': localStorage.getItem('token') }
         });
 
@@ -442,7 +442,7 @@ async function loadNotifications() {
                 }, 300);
 
                 try {
-                    await fetch(`/api/notifications/${notif.id}`, {
+                    await fetchWithAuth(`/api/notifications/${notif.id}`, {
                         method: 'DELETE',
                         headers: { 'x-access-token': localStorage.getItem('token') }
                     });
@@ -498,7 +498,7 @@ async function loadAnnouncements() {
     // HTML'de id="announcementListContainer" ekledik
     
     try {
-        const response = await fetch('/api/announcements', {
+        const response = await fetchWithAuth('/api/announcements', {
             headers: { 'x-access-token': localStorage.getItem('token') }
         });
         
@@ -615,7 +615,7 @@ async function loadPhotos() {
     gallery.innerHTML = '<div class="col-12 text-center py-4"><div class="spinner-border text-primary"></div></div>';
 
     try {
-        const response = await fetch(`/api/photos?category=${currentPhotoCategory}`, {
+        const response = await fetchWithAuth(`/api/photos?category=${currentPhotoCategory}`, {
             headers: { 'x-access-token': localStorage.getItem('token') }
         });
         const photos = await response.json();
@@ -699,7 +699,7 @@ if (photoInput) {
         statusDiv.className = "mt-2 small fw-bold text-primary";
 
         try {
-            const response = await fetch('/api/photos/upload', {
+            const response = await fetchWithAuth('/api/photos/upload', {
                 method: 'POST',
                 headers: { 'x-access-token': localStorage.getItem('token') },
                 body: formData // Content-Type otomatik ayarlanır
@@ -737,7 +737,7 @@ async function deletePhoto(id) {
     if (!confirm("Bu fotoğrafı silmek istediğinize emin misiniz?")) return;
 
     try {
-        const response = await fetch(`/api/photos/${id}`, {
+        const response = await fetchWithAuth(`/api/photos/${id}`, {
             method: 'DELETE',
             headers: { 'x-access-token': localStorage.getItem('token') }
         });
