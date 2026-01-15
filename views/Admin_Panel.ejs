@@ -32,6 +32,8 @@
                         Oluştur</a></li>
                 <li><a href="#" class="nav-trigger" data-target="panel-createSchool"><i class="fas fa-school"></i> Okul/Kurum
                         Ekle</a></li>
+                <li><a href="#" class="nav-trigger" data-target="panel-licenses"><i class="fas fa-key"></i> Lisans
+                        Yönetimi</a></li>
             </ul>
 
             <div class="sidebar-footer">
@@ -207,33 +209,58 @@
             </div>
 
             <div id="panel-createSchool" class="content-section d-none fade-in">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <div class="glass-panel p-4">
-                            <h4 class="fw-bold mb-4 text-dark"><i class="fas fa-school me-2"></i>Yeni Okul Ekle</h4>
-                            
-                            <form id="createSchoolForm">
-                                <div class="mb-3">
-                                    <label class="glass-form-label">Okul Adı</label>
-                                    <input type="text" name="name" class="glass-form-control" placeholder="Örn: Ankara Fen Lisesi" required>
-                                </div>
+                <!-- ... (Mevcut Okul Ekleme Kodu) ... -->
+            </div>
 
+            <!-- LİSANS YÖNETİMİ PANELİ -->
+            <div id="panel-licenses" class="content-section d-none fade-in">
+                <div class="row">
+                    <!-- Sol: Lisans Oluşturma -->
+                    <div class="col-md-4">
+                        <div class="glass-panel p-4 mb-4">
+                            <h5 class="fw-bold mb-3 text-dark"><i class="fas fa-plus-circle me-2"></i>Lisans Üret</h5>
+                            <form id="createLicenseForm">
                                 <div class="mb-3">
-                                    <label class="glass-form-label">Şehir</label>
-                                    <select name="city" class="glass-form-control">
-                                        <option value="Ankara">Ankara</option>
-                                        <option value="İstanbul">İstanbul</option>
-                                        <option value="İzmir">İzmir</option>
-                                        <option value="Bursa">Bursa</option>
-                                        <option value="Antalya">Antalya</option>
-                                        <option value="Diğer">Diğer</option>
+                                    <label class="glass-form-label">Okul Seçin</label>
+                                    <select name="school_id" id="licenseSchoolSelect" class="glass-form-control" required>
+                                        <option value="" disabled selected>Yükleniyor...</option>
                                     </select>
                                 </div>
-
-                                <button type="submit" class="btn btn-dark w-100 py-3 rounded-pill fw-bold mt-2">
-                                    Okulu Kaydet <i class="fas fa-save ms-2"></i>
+                                <div class="mb-3">
+                                    <label class="glass-form-label">Adet</label>
+                                    <input type="number" name="count" class="glass-form-control" value="1" min="1" max="50" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 rounded-pill">
+                                    <i class="fas fa-magic me-2"></i>Oluştur
                                 </button>
                             </form>
+                        </div>
+                    </div>
+
+                    <!-- Sağ: Lisans Listesi -->
+                    <div class="col-md-8">
+                        <div class="glass-panel p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="fw-bold mb-0 text-dark">Mevcut Lisanslar</h5>
+                                <button class="btn btn-sm btn-outline-dark rounded-pill" onclick="loadLicenses()">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                                <table class="glass-table w-100">
+                                    <thead>
+                                        <tr>
+                                            <th>Anahtar</th>
+                                            <th>Okul</th>
+                                            <th>Durum</th>
+                                            <th>Kullanan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="licenseTableBody">
+                                        <tr><td colspan="4" class="text-center text-muted">Yükleniyor...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

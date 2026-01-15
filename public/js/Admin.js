@@ -10,9 +10,126 @@ document.addEventListener("DOMContentLoaded", () => {
     setupCreateYearbook();
     // 4. OKUL EKLEME 
     setupCreateSchool();
+    // 5. LİSANS YÖNETİMİ 
+    setupLicenseManagement();
 });
 
-// --- GÜVENLİK FONKSİYONU ---
+// ... (Mevcut Fonksiyonlar) ...
+
+// --- LİSANS YÖNETİMİ ---
+function setupLicenseManagement() {
+    const form = document.getElementById('createLicenseForm');
+    
+    // Okulları Yükle
+    loadSchoolsForLicense();
+
+    // Lisansları Yükle (Panel açıldığında yüklenmesi daha iyi olur ama şimdilik burada çağıralım)
+    loadLicenses();
+
+    // Buton Dinleyici (Panel açıldığında yüklemesi için)
+    const btnLicense = document.querySelector('[data-target="panel-licenses"]');
+    if (btnLicense) {
+        btnLicense.addEventListener('click', () => {
+            loadSchoolsForLicense();
+            loadLicenses();
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            data.count = parseInt(data.count);
+            data.school_id = parseInt(data.school_id);
+
+            try {
+                const response = await fetchWithAuth('/api/licenses/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert("✅ " + result.message);
+                    loadLicenses(); // Listeyi yenile
+                } else {
+                    alert("Hata: " + result.message);
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Hata oluştu.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+    }
+}
+
+async function loadSchoolsForLicense() {
+    const select = document.getElementById('licenseSchoolSelect');
+    if (!select) return;
+
+    try {
+        const response = await fetch('/api/schools'); // Public endpoint
+        const schools = await response.json();
+
+        select.innerHTML = '<option value="" disabled selected>Okul Seçin</option>';
+        schools.forEach(school => {
+            const opt = document.createElement('option');
+            opt.value = school.id;
+            opt.innerText = school.name;
+            select.appendChild(opt);
+        });
+    } catch (error) {
+        console.error("Okullar yüklenemedi", error);
+    }
+}
+
+async function loadLicenses() {
+    const tbody = document.getElementById('licenseTableBody');
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center"><i class="fas fa-spinner fa-spin"></i></td></tr>';
+
+    try {
+        const response = await fetchWithAuth('/api/licenses');
+        const licenses = await response.json();
+
+        tbody.innerHTML = '';
+        if (licenses.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Kayıtlı lisans yok.</td></tr>';
+            return;
+        }
+
+        licenses.forEach(lic => {
+            const statusBadge = lic.is_used 
+                ? '<span class="badge bg-danger">Kullanıldı</span>' 
+                : '<span class="badge bg-success">Boşta</span>';
+            
+            const userText = lic.user ? escapeHTML(lic.user.fullname) : '-';
+            const schoolName = lic.school ? escapeHTML(lic.school.name) : '-';
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="font-monospace small">${lic.license_key}</td>
+                <td>${schoolName}</td>
+                <td>${statusBadge}</td>
+                <td>${userText}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error(error);
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Hata oluştu.</td></tr>';
+    }
+}
 function escapeHTML(str) {
     if (!str) return "";
     return String(str).replace(/[&<>'"/]/g, 

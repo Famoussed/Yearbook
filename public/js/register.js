@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const pageTitle = document.getElementById('pageTitle');
     const headerIcon = document.getElementById('headerIcon');
     const studentFields = document.getElementById('studentFields');
-    const teacherFields = document.getElementById('teacherFields');
+    const teacherFields = document.getElementById('teacherInfo'); // ID Düzeltildi
 
     // OKULLARI YÜKLE
     loadSchools();

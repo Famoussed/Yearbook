@@ -7,6 +7,7 @@ const Teacher = db.teachers;
 const School = db.schools;
 const GradeLevel = db.gradeLevels
 const RefreshToken = db.refreshToken;
+const License = db.licenses; // Lisans modelini ekle
 
 const Op = db.Sequelize.Op;
 var jwt = require("jsonwebtoken");
@@ -20,10 +21,40 @@ exports.register = async (req, res) => {
     // 1. ADIM: Rolü Belirle
     let roleName = req.body.role || "user";
 
+    // --- LİSANS KONTROLÜ (SADECE ÖĞRETMEN İÇİN) ---
+    let license = null;
+    if (roleName === "teacher") {
+        const licenseKey = req.body.license_key;
+        const schoolId = parseInt(req.body.school_id);
+
+        if (!licenseKey) {
+            throw new Error("Öğretmen kaydı için Lisans Anahtarı zorunludur!");
+        }
+
+        // Lisansı bul
+        license = await License.findOne({ 
+            where: { license_key: licenseKey },
+            transaction: t // Transaction içinde ara (lock mekanizması için önemli olabilir)
+        });
+
+        if (!license) {
+            throw new Error("Geçersiz Lisans Anahtarı!");
+        }
+
+        if (license.is_used) {
+            throw new Error("Bu lisans anahtarı daha önce kullanılmış!");
+        }
+
+        if (license.school_id !== schoolId) {
+            throw new Error("Bu lisans anahtarı seçtiğiniz okul için geçerli değil!");
+        }
+    }
+    // --------------------------------------------------
+
     const role = await Role.findOne({ where: { name: roleName } });
 
     if (!role) {
-      throw new Error("Belirtilen rol sistemde bulunamadı!");
+        throw new Error("Belirtilen rol sistemde bulunamadı!");
     }
 
     // 2. ADIM: Şifreyi Hashle
@@ -53,8 +84,13 @@ exports.register = async (req, res) => {
       await Teacher.create({
         user_id: user.id,
         school_id: req.body.school_id,
-        is_verified: false
+        is_verified: true // Lisans ile geldiği için direkt onaylı olabilir
       }, { transaction: t });
+
+      // LİSANSI GÜNCELLE (KULLANILDI İŞARETLE)
+      license.is_used = true;
+      license.used_by = user.id;
+      await license.save({ transaction: t });
     }
 
     // 5. Transaction Onayla
@@ -138,7 +174,7 @@ exports.signin = (req, res) => {
         httpOnly: true,
         secure: false, // Canlıda (HTTPS) true olmalı
         sameSite: 'strict',
-        maxAge: 10000 // 1 Saat
+        maxAge: 3600000 // 1 Saat (Düzeltildi)
       });
 
       res.cookie('refreshToken', refreshTokenData, {

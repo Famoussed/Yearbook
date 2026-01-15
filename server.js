@@ -59,6 +59,7 @@ require("./app/routes/teacher.routes")(app);
 require('./app/routes/notification.routes')(app);
 require('./app/routes/announcement.routes')(app);
 require('./app/routes/photo.routes')(app);
+require('./app/routes/license.routes')(app);
 
 // --- SUNUCUYU BAŞLAT ---
 const PORT = process.env.PORT || 8080;

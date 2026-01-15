@@ -35,10 +35,21 @@ db.memories = require("./memory.model.js")(sequelize, Sequelize);
 db.notifications = require("./notification.model.js")(sequelize, Sequelize);
 db.announcements = require("./announcement.model.js")(sequelize, Sequelize);
 db.photos = require("./photo.model.js")(sequelize, Sequelize);
+db.licenses = require("./license.model.js")(sequelize, Sequelize);
 
 // --- İLİŞKİLER (ASSOCIATIONS) ---
 
 // 1. Role - User İlişkisi
+// ... (Mevcut kodlar)
+
+// Lisans İlişkileri
+db.schools.hasMany(db.licenses, { as: "licenses", foreignKey: "school_id" });
+db.licenses.belongsTo(db.schools, { foreignKey: "school_id", as: "school" });
+
+db.users.hasOne(db.licenses, { foreignKey: "used_by", as: "used_license" });
+db.licenses.belongsTo(db.users, { foreignKey: "used_by", as: "user" });
+
+// Kod içinde kullanmak için sabitler
 db.roles.hasMany(db.users, { as: "users", foreignKey: "role_id" });
 db.users.belongsTo(db.roles, { foreignKey: "role_id", as: "role" });
 
