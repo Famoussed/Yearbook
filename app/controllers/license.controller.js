@@ -41,16 +41,29 @@ exports.createLicense = async (req, res) => {
 // Lisansları Listele
 exports.getAllLicenses = async (req, res) => {
     try {
+        const schoolId = req.query.school_id;
+        console.log("DEBUG BACKEND: Gelen school_id:", schoolId, "Tip:", typeof schoolId);
+
+        let whereCondition = {};
+
+        if (schoolId) {
+            whereCondition.school_id = parseInt(schoolId);
+        }
+
         const licenses = await License.findAll({
+            where: whereCondition,
             include: [
                 { model: School, as: "school", attributes: ['name'] },
                 { model: User, as: "user", attributes: ['fullname'] }
             ],
             order: [['createdAt', 'DESC']]
         });
+        
+        console.log("DEBUG BACKEND: Bulunan Lisans Sayısı:", licenses.length);
 
         res.status(200).send(licenses);
     } catch (err) {
+        console.error("Lisans Listeleme Hatası:", err);
         res.status(500).send({ message: err.message });
     }
 };

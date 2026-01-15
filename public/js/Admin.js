@@ -30,7 +30,16 @@ function setupLicenseManagement() {
     const btnLicense = document.querySelector('[data-target="panel-licenses"]');
     if (btnLicense) {
         btnLicense.addEventListener('click', () => {
-            loadSchoolsForLicense();
+            // loadSchoolsForLicense(); // GEREKSİZ TEKRAR: Zaten başta yükleniyor ve seçimi sıfırlıyor!
+            loadLicenses();
+        });
+    }
+
+    // Filtre Dropdown Dinleyicisi
+    const filterSelect = document.getElementById('filterLicenseSchool');
+    if (filterSelect) {
+        filterSelect.addEventListener('change', () => {
+            console.log("DEBUG: Dropdown değişti. Yeni değer:", filterSelect.value);
             loadLicenses();
         });
     }
@@ -74,20 +83,52 @@ function setupLicenseManagement() {
 }
 
 async function loadSchoolsForLicense() {
-    const select = document.getElementById('licenseSchoolSelect');
-    if (!select) return;
+    console.log("DEBUG: loadSchoolsForLicense çalıştı.");
+    const selectForm = document.getElementById('licenseSchoolSelect');
+    const selectFilter = document.getElementById('filterLicenseSchool');
+    
+    // Sadece formdaki select bulunamazsa çık
+    if (!selectForm && !selectFilter) {
+        console.warn("DEBUG: Select elementleri bulunamadı!");
+        return;
+    }
 
     try {
         const response = await fetch('/api/schools'); // Public endpoint
         const schools = await response.json();
+        console.log("DEBUG: Gelen Okul Sayısı:", schools.length);
 
-        select.innerHTML = '<option value="" disabled selected>Okul Seçin</option>';
-        schools.forEach(school => {
-            const opt = document.createElement('option');
-            opt.value = school.id;
-            opt.innerText = school.name;
-            select.appendChild(opt);
-        });
+        // 1. Form Select'i Doldur
+        if (selectForm) {
+            selectForm.innerHTML = '<option value="" disabled selected>Okul Seçin</option>';
+            schools.forEach(school => {
+                const opt = document.createElement('option');
+                opt.value = school.id;
+                opt.innerText = school.name;
+                selectForm.appendChild(opt);
+            });
+        }
+
+        // 2. Filtre Select'i Doldur
+        if (selectFilter) {
+            // Seçili değeri koru
+            const currentVal = selectFilter.value; 
+            
+            selectFilter.innerHTML = '<option value="">Tüm Okullar</option>';
+            schools.forEach(school => {
+                const opt = document.createElement('option');
+                opt.value = school.id;
+                opt.innerText = school.name;
+                
+                // Eğer daha önce seçiliyse tekrar seçili yap
+                if (String(school.id) === String(currentVal)) {
+                    opt.selected = true;
+                }
+                
+                selectFilter.appendChild(opt);
+            });
+        }
+
     } catch (error) {
         console.error("Okullar yüklenemedi", error);
     }
@@ -95,15 +136,31 @@ async function loadSchoolsForLicense() {
 
 async function loadLicenses() {
     const tbody = document.getElementById('licenseTableBody');
+    const filterSelect = document.getElementById('filterLicenseSchool');
+    
+    if (!tbody) return;
+
     tbody.innerHTML = '<tr><td colspan="4" class="text-center"><i class="fas fa-spinner fa-spin"></i></td></tr>';
 
     try {
-        const response = await fetchWithAuth('/api/licenses');
+        let url = '/api/licenses';
+        
+        console.log("DEBUG: Seçili Okul ID:", filterSelect ? filterSelect.value : "Element Yok");
+
+        if (filterSelect && filterSelect.value) {
+            url += `?school_id=${filterSelect.value}`;
+        }
+        
+        console.log("DEBUG: loadLicenses URL:", url); // Hangi URL'e gidiyor?
+
+        const response = await fetchWithAuth(url);
         const licenses = await response.json();
+        
+        console.log("DEBUG: Gelen Lisans Sayısı:", licenses.length);
 
         tbody.innerHTML = '';
         if (licenses.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Kayıtlı lisans yok.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Bu filtreye uygun lisans yok.</td></tr>';
             return;
         }
 
