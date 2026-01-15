@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    
+
     // 1. DASHBOARD VERİLERİNİ YÜKLE 🚀
     loadDashboardData();
 
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // --- LİSANS YÖNETİMİ ---
 function setupLicenseManagement() {
     const form = document.getElementById('createLicenseForm');
-    
+
     // Okulları Yükle
     loadSchoolsForLicense();
 
@@ -86,7 +86,7 @@ async function loadSchoolsForLicense() {
     console.log("DEBUG: loadSchoolsForLicense çalıştı.");
     const selectForm = document.getElementById('licenseSchoolSelect');
     const selectFilter = document.getElementById('filterLicenseSchool');
-    
+
     // Sadece formdaki select bulunamazsa çık
     if (!selectForm && !selectFilter) {
         console.warn("DEBUG: Select elementleri bulunamadı!");
@@ -112,19 +112,19 @@ async function loadSchoolsForLicense() {
         // 2. Filtre Select'i Doldur
         if (selectFilter) {
             // Seçili değeri koru
-            const currentVal = selectFilter.value; 
-            
+            const currentVal = selectFilter.value;
+
             selectFilter.innerHTML = '<option value="">Tüm Okullar</option>';
             schools.forEach(school => {
                 const opt = document.createElement('option');
                 opt.value = school.id;
                 opt.innerText = school.name;
-                
+
                 // Eğer daha önce seçiliyse tekrar seçili yap
                 if (String(school.id) === String(currentVal)) {
                     opt.selected = true;
                 }
-                
+
                 selectFilter.appendChild(opt);
             });
         }
@@ -137,25 +137,25 @@ async function loadSchoolsForLicense() {
 async function loadLicenses() {
     const tbody = document.getElementById('licenseTableBody');
     const filterSelect = document.getElementById('filterLicenseSchool');
-    
+
     if (!tbody) return;
 
     tbody.innerHTML = '<tr><td colspan="4" class="text-center"><i class="fas fa-spinner fa-spin"></i></td></tr>';
 
     try {
         let url = '/api/licenses';
-        
+
         console.log("DEBUG: Seçili Okul ID:", filterSelect ? filterSelect.value : "Element Yok");
 
         if (filterSelect && filterSelect.value) {
             url += `?school_id=${filterSelect.value}`;
         }
-        
+
         console.log("DEBUG: loadLicenses URL:", url); // Hangi URL'e gidiyor?
 
         const response = await fetchWithAuth(url);
         const licenses = await response.json();
-        
+
         console.log("DEBUG: Gelen Lisans Sayısı:", licenses.length);
 
         tbody.innerHTML = '';
@@ -165,31 +165,59 @@ async function loadLicenses() {
         }
 
         licenses.forEach(lic => {
-            const statusBadge = lic.is_used 
-                ? '<span class="badge bg-danger">Kullanıldı</span>' 
+            const statusBadge = lic.is_used
+                ? '<span class="badge bg-danger">Kullanıldı</span>'
                 : '<span class="badge bg-success">Boşta</span>';
-            
+
             const userText = lic.user ? escapeHTML(lic.user.fullname) : '-';
             const schoolName = lic.school ? escapeHTML(lic.school.name) : '-';
 
             const row = document.createElement('tr');
+
             row.innerHTML = `
-                <td class="font-monospace small">${lic.license_key}</td>
-                <td>${schoolName}</td>
-                <td>${statusBadge}</td>
-                <td>${userText}</td>
-            `;
+                            <td class="font-monospace small">${lic.license_key}</td>
+                            <td>${schoolName}</td>
+                            <td>${statusBadge}</td>
+                            <td>${userText}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger rounded-circle" onclick="deleteLicense(${lic.id})">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        `;
+
             tbody.appendChild(row);
         });
 
     } catch (error) {
         console.error(error);
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Hata oluştu.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Hata oluştu.</td></tr>';
     }
 }
+async function deleteLicense(id) {
+
+    if (!confirm("Bu lisansı silmek istediğinize emin misiniz?")) return;
+    try {
+        const response = await fetchWithAuth(`/api/licenses/${id}`, {
+            method: 'DELETE'
+        });
+        const result = await response.json();
+
+        if (response.ok) {
+            alert("Lisans silindi.");
+            loadLicenses(); // Listeyi yenile
+        } else {
+            alert("Hata: " + result.message);
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Silme işlemi başarısız.");
+    }
+}
+
 function escapeHTML(str) {
     if (!str) return "";
-    return String(str).replace(/[&<>'"/]/g, 
+    return String(str).replace(/[&<>'"/]/g,
         tag => ({
             '&': '&amp;',
             '<': '&lt;',
@@ -250,13 +278,13 @@ function setupNavigation() {
 
     triggers.forEach(button => {
         button.addEventListener('click', (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             triggers.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
             const targetId = button.getAttribute('data-target');
             panels.forEach(panel => {
                 panel.classList.add('d-none');
-                panel.classList.remove('fade-in-active'); 
+                panel.classList.remove('fade-in-active');
             });
             const targetPanel = document.getElementById(targetId);
             if (targetPanel) {
@@ -271,7 +299,7 @@ function setupCreateYearbook() {
     const createForm = document.getElementById('createYearbookForm');
     if (createForm) {
         createForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             const submitBtn = createForm.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
             submitBtn.disabled = true;
@@ -279,7 +307,7 @@ function setupCreateYearbook() {
 
             const formData = new FormData(createForm);
             const data = Object.fromEntries(formData.entries());
-            if(data.school_id) data.school_id = parseInt(data.school_id);
+            if (data.school_id) data.school_id = parseInt(data.school_id);
 
             try {
                 const response = await fetchWithAuth('/api/yearbook/create', {
@@ -310,10 +338,10 @@ function setupCreateYearbook() {
 //OKUL OLUŞTURMA FONKSİYONU
 function setupCreateSchool() {
     const createForm = document.getElementById('createSchoolForm');
-    
+
     if (createForm) {
         createForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
 
             // Butonu Kilitle
             const submitBtn = createForm.querySelector('button[type="submit"]');

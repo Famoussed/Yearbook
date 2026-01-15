@@ -67,3 +67,21 @@ exports.getAllLicenses = async (req, res) => {
         res.status(500).send({ message: err.message });
     }
 };
+
+// Lisans Sil
+exports.deleteLicense = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const license = await License.findByPk(id);
+
+        if (!license) {
+            return res.status(404).send({ message: "Lisans bulunamadı." });
+        }
+
+        await license.destroy();
+        res.status(200).send({ message: "Lisans başarıyla silindi." });
+
+    } catch (err) {
+        res.status(500).send({ message: "Silme işlemi başarısız: " + err.message });
+    }
+};

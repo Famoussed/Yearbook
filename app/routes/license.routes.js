@@ -15,4 +15,7 @@ module.exports = function (app) {
 
     // Lisansları Listele (Sadece Admin)
     app.get("/api/licenses", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllLicenses);
+
+    // Lisans Sil (Sadece Admin)
+    app.delete("/api/licenses/:id", [authJwt.verifyToken, authJwt.isAdmin], controller.deleteLicense);
 };
