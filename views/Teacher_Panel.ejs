@@ -59,6 +59,13 @@
                 </li>
 
                 <li>
+                    <a href="#" class="nav-trigger" data-target="panel-student-approvals">
+                        <i class="fas fa-user-check"></i> Öğrenci Onayları
+                        <span class="badge bg-warning ms-auto rounded-pill" id="pendingStudentBadge" style="display:none;">0</span>
+                    </a>
+                </li>
+
+                <li>
                     <a href="#" class="nav-trigger" data-target="panel-approvals">
                         <i class="fas fa-feather-alt"></i> Yazı Onayları
                         <span class="badge bg-danger ms-auto rounded-pill" id="pendingCountBadge"
@@ -191,6 +198,35 @@
                                 </tr>
                             </thead>
                             <tbody id="studentListTable">
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">Yükleniyor...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-student-approvals" class="content-section d-none fade-in">
+                <div class="glass-panel p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0 text-dark">Yeni Kayıt Onayları</h5>
+                        <button class="btn btn-sm btn-outline-dark rounded-pill" onclick="loadPendingStudents()">
+                            <i class="fas fa-sync-alt me-1"></i> Yenile
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="glass-table w-100">
+                            <thead>
+                                <tr>
+                                    <th>Ad Soyad</th>
+                                    <th>Okul No / Sınıf</th>
+                                    <th>Tarih</th>
+                                    <th class="text-end">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pendingStudentTableBody">
                                 <tr>
                                     <td colspan="4" class="text-center py-4">Yükleniyor...</td>
                                 </tr>

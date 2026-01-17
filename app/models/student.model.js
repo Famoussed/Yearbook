@@ -23,6 +23,10 @@ module.exports = (sequelize, Sequelize) => {
     },
     class_info: {
       type: Sequelize.STRING
+    },
+    is_verified: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false // Varsayılan: Onaysız
     }
   });
 

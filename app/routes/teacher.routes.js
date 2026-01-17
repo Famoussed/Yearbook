@@ -21,4 +21,10 @@ module.exports = function(app) {
 
   // 4. Öğrenci Listesi
   app.get("/api/teacher/students", [authJwt.verifyToken], controller.getStudents);
+
+  // 5. Onay Bekleyen Öğrenciler (Kayıt)
+  app.get("/api/teacher/pending-students", [authJwt.verifyToken], controller.getPendingStudents);
+
+  // 6. Öğrenci Onay/Red İşlemi
+  app.post("/api/teacher/review-student", [authJwt.verifyToken], controller.reviewStudent);
 };

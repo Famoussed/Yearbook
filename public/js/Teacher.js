@@ -76,6 +76,7 @@ function setupNavigation() {
                 if (targetId === 'panel-dashboard') loadDashboardStats();
                 if (targetId === 'panel-approvals') loadPendingMemories();
                 if (targetId === 'panel-students') loadStudents();
+                if (targetId === 'panel-student-approvals') loadPendingStudents();
             }
         });
     });
@@ -230,4 +231,84 @@ function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
     window.location.href = '/login';
+}
+
+// --- 5. ONAY BEKLEYEN ÖĞRENCİLER ---
+async function loadPendingStudents() {
+    const tableBody = document.getElementById('pendingStudentTableBody');
+    const badge = document.getElementById('pendingStudentBadge');
+    
+    tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-white-50"><i class="fas fa-spinner fa-spin me-2"></i>Yükleniyor...</td></tr>';
+
+    try {
+        const response = await fetchWithAuth('/api/teacher/pending-students', { credentials: 'include' });
+        const students = await response.json();
+
+        tableBody.innerHTML = '';
+
+        if (students.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-white-50">Onay bekleyen yeni kayıt bulunmuyor.</td></tr>';
+            badge.style.display = 'none';
+            return;
+        }
+
+        // Sidebar rozetini güncelle
+        badge.innerText = students.length;
+        badge.style.display = 'inline-block';
+
+        students.forEach(student => {
+            const date = new Date(student.createdAt).toLocaleDateString('tr-TR');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <div class="fw-bold text-white">${escapeHTML(student.fullname)}</div>
+                    <small class="text-white-50">${escapeHTML(student.email)}</small>
+                </td>
+                <td>
+                    <div class="text-white">${escapeHTML(student.student_number)}</div>
+                    <small class="text-white-50">${escapeHTML(student.class_info)}</small>
+                </td>
+                <td class="text-white-50">${date}</td>
+                <td class="text-end">
+                    <button class="btn btn-sm btn-outline-danger me-1" onclick="reviewStudent(${student.student_id}, 'reject')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="btn btn-sm btn-success" onclick="reviewStudent(${student.student_id}, 'approve')">
+                        <i class="fas fa-check me-1"></i> Onayla
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error(error);
+        tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Veri yüklenemedi.</td></tr>';
+    }
+}
+
+// --- 6. ÖĞRENCİ ONAY/RED İŞLEMİ ---
+async function reviewStudent(studentId, decision) {
+    const actionText = decision === 'approve' ? "Bu öğrenciyi onaylıyor musunuz?" : "Bu öğrenciyi REDDEDİYOR musunuz? (Hesabı tamamen silinecektir!)";
+    if (!confirm(actionText)) return;
+
+    try {
+        const response = await fetchWithAuth('/api/teacher/review-student', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ student_id: studentId, decision: decision }),
+            credentials: 'include'
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            loadPendingStudents(); // Listeyi yenile
+            loadDashboardStats(); // Mevcut öğrenci sayısını güncellemek için
+        } else {
+            alert("Hata: " + result.message);
+        }
+    } catch (error) {
+        console.error("Hata:", error);
+        alert("Bağlantı hatası!");
+    }
 }

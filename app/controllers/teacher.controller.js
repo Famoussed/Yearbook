@@ -153,3 +153,89 @@ exports.getStudents = async (req, res) => {
     res.status(500).send({ message: err.message });
   }
 };
+
+// 5. ONAY BEKLEYEN ÖĞRENCİLERİ GETİR (KAYIT)
+exports.getPendingStudents = async (req, res) => {
+  try {
+    const teacher = await Teacher.findOne({ where: { user_id: req.userId } });
+
+    if (!teacher) {
+        return res.status(404).send({ message: "Öğretmen profili bulunamadı." });
+    }
+
+    const pendingStudents = await Student.findAll({
+      where: {
+        school_id: teacher.school_id,
+        is_verified: false // Sadece onaylanmamışları getir
+      },
+      include: [
+        { 
+          model: User, 
+          as: "user", 
+          attributes: ["fullname", "email", "tckn", "createdAt"] 
+        }
+      ],
+      order: [['createdAt', 'DESC']]
+    });
+
+    const formattedList = pendingStudents.map(s => ({
+      student_id: s.id,
+      user_id: s.user_id,
+      fullname: s.user.fullname,
+      email: s.user.email,
+      student_number: s.student_number,
+      class_info: s.class_info,
+      createdAt: s.user.createdAt
+    }));
+
+    res.status(200).send(formattedList);
+
+  } catch (err) {
+    res.status(500).send({ message: "Öğrenci listesi alınırken hata oluştu: " + err.message });
+  }
+};
+
+// 6. ÖĞRENCİ BAŞVURUSUNU DEĞERLENDİR (ONAYLA / REDDET)
+exports.reviewStudent = async (req, res) => {
+  const transaction = await db.sequelize.transaction();
+  
+  try {
+    const { student_id, decision } = req.body; 
+
+    const student = await Student.findOne({ 
+      where: { id: student_id },
+      include: [{ model: User, as: "user" }] 
+    });
+
+    if (!student) {
+      await transaction.rollback();
+      return res.status(404).send({ message: "Öğrenci başvurusu bulunamadı." });
+    }
+
+    if (decision === 'approve') {
+      student.is_verified = true;
+      await student.save({ transaction });
+      
+      await transaction.commit();
+      return res.status(200).send({ message: `${student.user.fullname} öğrencisinin kaydı onaylandı.` });
+
+    } else if (decision === 'reject') {
+      const userId = student.user_id;
+      const userName = student.user.fullname;
+
+      await student.destroy({ transaction });
+      await User.destroy({ where: { id: userId }, transaction });
+
+      await transaction.commit();
+      return res.status(200).send({ message: `${userName} öğrencisinin kaydı reddedildi ve silindi.` });
+    
+    } else {
+      await transaction.rollback();
+      return res.status(400).send({ message: "Geçersiz işlem." });
+    }
+
+  } catch (err) {
+    await transaction.rollback();
+    res.status(500).send({ message: "İşlem sırasında hata oluştu: " + err.message });
+  }
+};

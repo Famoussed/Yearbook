@@ -73,14 +73,19 @@ exports.register = async (req, res) => {
     }, { transaction: t });
 
     // 4. ADIM: Profil Tablolarını Doldur
+    let successMessage = "Kayıt başarıyla tamamlandı!";
+
     if (roleName === "student") {
       await Student.create({
         user_id: user.id,
         school_id: req.body.school_id,
         grade_level_id: req.body.grade_level_id,
         student_number: req.body.student_number,
-        class_info: req.body.class_info
+        class_info: req.body.class_info,
+        is_verified: false // AÇIKÇA BELİRTELİM: Onay bekliyor
       }, { transaction: t });
+      
+      successMessage = "Kayıt işleminiz alındı! Okul sorumlusu öğretmenin onayından sonra giriş yapabileceksiniz.";
 
     } else if (roleName === "teacher") {
       await Teacher.create({
@@ -98,7 +103,7 @@ exports.register = async (req, res) => {
     // 5. Transaction Onayla
     await t.commit();
 
-    res.send({ message: "Kayıt başarıyla tamamlandı!" });
+    res.send({ message: successMessage });
 
   } catch (error) {
     // Hata durumunda geri al (rollback)
@@ -161,6 +166,16 @@ exports.signin = (req, res) => {
           accessToken: null,
           message: "Geçersiz Şifre!"
         });
+      }
+
+      // --- ÖĞRENCİ ONAY KONTROLÜ ---
+      if (user.student_profile) {
+        if (user.student_profile.is_verified === false) {
+          return res.status(401).send({
+            accessToken: null,
+            message: "Hesabınız henüz onaylanmamış! Lütfen sınıf öğretmeninizin onaylamasını bekleyin."
+          });
+        }
       }
 
       // Token Üretimi
