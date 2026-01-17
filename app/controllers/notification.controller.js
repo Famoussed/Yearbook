@@ -34,3 +34,4 @@ exports.deleteNotification = async (req, res) => {
     res.status(500).send({ message: "Sunucu hatası." });
   }
 };
+

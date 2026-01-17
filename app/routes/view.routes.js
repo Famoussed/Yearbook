@@ -8,6 +8,12 @@ module.exports = function (app) {
     app.get("/register_router", (req, res) => res.render("register_router"));
     app.get("/login", (req, res) => res.render("login"));
     app.get("/register", (req, res) => res.render("register"));
+
+    // Şifremi Unuttum Sayfası
+    app.get("/forgot-password", (req, res) => res.render("forgot-password"));
+    
+    // Şifre Sıfırlama Sayfası (Token ile)
+    app.get("/reset-password/:token", (req, res) => res.render("reset-password", { token: req.params.token }));
     
     // YÖNETİCİ PANELİ (Sadece Admin)
     app.get("/admin", [authJwt.verifyTokenForView, authJwt.isAdmin], (req, res) => res.render("Admin_Panel"));

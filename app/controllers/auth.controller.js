@@ -12,6 +12,8 @@ const License = db.licenses; // Lisans modelini ekle
 const Op = db.Sequelize.Op;
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
 exports.register = async (req, res) => {
   // Transaction Başlat
@@ -329,5 +331,92 @@ exports.refreshToken = async (req, res) => {
 
   } catch (err) {
     return res.status(500).send({ message: err.message });
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const user = await User.findOne({ where: { email: req.body.email } });
+
+    if (!user) {
+      return res.status(404).send({ message: "Bu e-posta adresiyle kayıtlı kullanıcı bulunamadı." });
+    }
+
+    // Token oluştur
+    const token = crypto.randomBytes(20).toString('hex');
+
+    // Token'ı ve süresini kaydet (1 saat geçerli)
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 saat
+
+    await user.save();
+
+    // E-posta gönderim ayarları (Gerçek Sunucu)
+    // Bilgiler .env dosyasından çekilir.
+    const transporter = nodemailer.createTransport({
+      service: process.env.EMAIL_SERVICE, // Örn: 'gmail'
+      host: process.env.EMAIL_HOST,       // Örn: 'smtp.gmail.com'
+      port: process.env.EMAIL_PORT,       // Örn: 587 veya 465
+      secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for other ports
+      auth: {
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS 
+      }
+    });
+
+    const resetUrl = `http://${req.headers.host}/reset-password/${token}`;
+
+    const mailOptions = {
+      from: `"MezunSoft Destek" <${process.env.EMAIL_USER}>`,
+      to: user.email,
+      subject: 'Şifre Sıfırlama İsteği',
+      html: `
+        <h3>Şifre Sıfırlama</h3>
+        <p>Merhaba ${user.fullname},</p>
+        <p>Şifrenizi sıfırlamak için bir istek aldık. Aşağıdaki bağlantıya tıklayarak yeni şifrenizi belirleyebilirsiniz:</p>
+        <p><a href="${resetUrl}" style="background-color: #6c5ce7; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Şifremi Sıfırla</a></p>
+        <p>veya bağlantıyı tarayıcınıza yapıştırın:</p>
+        <p>${resetUrl}</p>
+        <p>Bu isteği siz yapmadıysanız, bu e-postayı görmezden gelebilirsiniz.</p>
+        <br>
+        <p>Saygılarımızla,<br>MezunSoft Ekibi</p>
+      `
+    };
+
+    let info = await transporter.sendMail(mailOptions);
+    console.log("Mail gönderildi ID: %s", info.messageId);
+
+    res.status(200).send({ message: "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi. Lütfen gelen kutunuzu (ve spam klasörünü) kontrol edin." });
+
+  } catch (err) {
+    console.log("Mail Gönderme Hatası:", err);
+    res.status(500).send({ message: "E-posta gönderilemedi. Lütfen sistem yöneticisiyle iletişime geçin. Hata: " + err.message });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      where: {
+        resetPasswordToken: req.params.token,
+        resetPasswordExpires: { [Op.gt]: Date.now() } // Süresi geçmemiş olmalı
+      }
+    });
+
+    if (!user) {
+      return res.status(400).send({ message: "Şifre sıfırlama bağlantısı geçersiz veya süresi dolmuş." });
+    }
+
+    // Yeni şifreyi hashle
+    user.password = bcrypt.hashSync(req.body.password, 8);
+    user.resetPasswordToken = null;
+    user.resetPasswordExpires = null;
+
+    await user.save();
+
+    res.status(200).send({ message: "Şifreniz başarıyla güncellendi! Giriş yapabilirsiniz." });
+
+  } catch (err) {
+    res.status(500).send({ message: "Hata oluştu: " + err.message });
   }
 };

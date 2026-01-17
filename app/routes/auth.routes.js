@@ -36,5 +36,11 @@ module.exports = function (app) {
   app.post("/api/auth/signin", controller.signin);
 
   // 3. Çıkış Yap (POST)
-  app.post("/api/auth/logout", controller.signout)
+  app.post("/api/auth/logout", controller.signout);
+
+  // 4. Şifremi Unuttum (POST)
+  app.post("/api/auth/forgot-password", controller.forgotPassword);
+
+  // 5. Şifre Sıfırlama (POST)
+  app.post("/api/auth/reset-password/:token", controller.resetPassword);
 };

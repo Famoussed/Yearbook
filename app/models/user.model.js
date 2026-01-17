@@ -32,6 +32,12 @@ module.exports = (sequelize, Sequelize) => {
     status: {
       type: Sequelize.BOOLEAN,
       defaultValue: true
+    },
+    resetPasswordToken: {
+      type: Sequelize.STRING
+    },
+    resetPasswordExpires: {
+      type: Sequelize.DATE
     }
   });
 
